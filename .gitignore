@@ -1,0 +1,32 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node (just in case)
+node_modules/
+npm-debug.log*
+
+# Python (just in case)
+__pycache__/
+*.pyc
+.venv/
+
+# Local server logs
+*.log
+
+# Snapshots / backup zips
+_snapshot_*.zip
+_backup_*.zip
+
+# Env / secrets
+.env
+.env.local
+*.pem
+*.key

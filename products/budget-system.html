@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>客製化預算管理系統 — 從組織架構貼合你的預算流程 / 澄沐實業</title>
+<link rel="icon" type="image/png" href="../assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08090a;
+    --panel: #0f1011;
+    --surface: rgba(255,255,255,0.03);
+    --surface-hover: rgba(255,255,255,0.05);
+    --text: #f7f8f8;
+    --text-2: #d0d6e0;
+    --text-muted: #8a8f98;
+    --text-subtle: #62666d;
+    --accent: #7170ff;
+    --accent-bg: #5e6ad2;
+    --accent-hover: #828fff;
+    --accent-soft: rgba(113,112,255,0.12);
+    --accent-glow: rgba(113,112,255,0.28);
+    --border: rgba(255,255,255,0.08);
+    --border-subtle: rgba(255,255,255,0.05);
+    --danger: #ef4444;
+    --danger-soft: rgba(239,68,68,0.10);
+    --success: #10b981;
+    --max-w: 1200px;
+    --gutter: clamp(20px, 4vw, 64px);
+  }
+  [data-theme="light"] {
+    --bg: #faf9f5;
+    --panel: #f5f3ed;
+    --surface: rgba(28,25,23,0.035);
+    --surface-hover: rgba(28,25,23,0.07);
+    --text: #1c1917;
+    --text-2: #3d3a33;
+    --text-muted: #78716c;
+    --text-subtle: #a8a29e;
+    --accent: #c96442;
+    --accent-bg: #bb4b23;
+    --accent-hover: #d97757;
+    --accent-soft: rgba(201,100,66,0.10);
+    --accent-glow: rgba(201,100,66,0.22);
+    --border: rgba(28,25,23,0.10);
+    --border-subtle: rgba(28,25,23,0.05);
+    --danger: #b91c1c;
+    --danger-soft: rgba(185,28,28,0.08);
+    --success: #15803d;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+    font-feature-settings: "cv01", "ss03";
+    font-weight: 400;
+    background: var(--bg);
+    color: var(--text-2);
+    line-height: 1.55;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    transition: background 0.5s ease, color 0.5s ease;
+  }
+
+  .bg-glow {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(94,106,210,0.10) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(113,112,255,0.08) 0%, transparent 50%),
+      var(--bg);
+    z-index: -2;
+    transition: background 0.5s ease;
+  }
+  [data-theme="light"] .bg-glow {
+    background:
+      radial-gradient(circle at 20% 20%, rgba(217,119,87,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(201,100,66,0.08) 0%, transparent 50%),
+      var(--bg);
+  }
+  .glow-sphere {
+    position: fixed;
+    width: 520px; height: 520px;
+    top: 25%; left: 50%;
+    background: radial-gradient(circle, rgba(113,112,255,0.16) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(70px);
+    z-index: -1;
+    pointer-events: none;
+    animation: drift 22s infinite alternate ease-in-out;
+  }
+  [data-theme="light"] .glow-sphere {
+    background: radial-gradient(circle, rgba(201,100,66,0.14) 0%, transparent 70%);
+  }
+  @keyframes drift {
+    from { transform: translate(-30%, -20%); }
+    to   { transform: translate(15%, 25%); }
+  }
+
+  nav.top {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,9,10,0.65);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+  }
+  [data-theme="light"] nav.top { background: rgba(250,249,245,0.78); }
+  .nav-inner {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: flex; align-items: center; justify-content: space-between;
+    height: 88px;
+  }
+  .wordmark {
+    display: flex; align-items: center; gap: 14px;
+    text-decoration: none; color: var(--text);
+  }
+  .wordmark-logo {
+    height: 44px; width: auto;
+    display: block;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: drop-shadow(0 2px 8px rgba(113,112,255,0.18));
+  }
+  [data-theme="light"] .wordmark-logo {
+    filter: drop-shadow(0 2px 8px rgba(201,100,66,0.20));
+  }
+  .wordmark:hover .wordmark-logo { transform: rotate(-6deg) scale(1.06); }
+  .wordmark-text { display: flex; align-items: baseline; gap: 14px; }
+  .wordmark-zh { font-weight: 600; font-size: 36px; letter-spacing: -0.9px; }
+  .wordmark-en {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-muted);
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .nav-right { display: flex; align-items: center; gap: 32px; }
+  .nav-links { display: flex; gap: 32px; list-style: none; padding: 0; margin: 0; }
+  .nav-links a {
+    color: var(--text-2); text-decoration: none;
+    font-size: 18px; font-weight: 510; letter-spacing: -0.18px;
+    transition: color 200ms ease;
+    position: relative;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a::after {
+    content: ''; position: absolute;
+    left: 0; bottom: -6px;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 220ms ease;
+  }
+  .nav-links a:hover::after { width: 100%; }
+
+  .theme-toggle {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.2s, transform 0.25s, border-color 0.2s, background 0.2s;
+  }
+  .theme-toggle:hover {
+    color: var(--accent);
+    transform: rotate(18deg);
+    border-color: var(--accent);
+  }
+  .theme-toggle svg {
+    width: 18px; height: 18px;
+    stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .theme-toggle .icon-moon { display: none; }
+  [data-theme="light"] .theme-toggle .icon-sun { display: none; }
+  [data-theme="light"] .theme-toggle .icon-moon { display: block; }
+
+  .hero {
+    padding: clamp(96px, 16vh, 160px) 0 clamp(80px, 12vh, 120px);
+    position: relative;
+  }
+  .hero-inner {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 0 var(--gutter);
+    animation: fadeIn 1.2s ease-out;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 12.5px;
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .hero h1 {
+    font-weight: 510;
+    font-size: clamp(36px, 6vw, 76px);
+    line-height: 1.05;
+    letter-spacing: -1.6px;
+    color: var(--text);
+    max-width: 22ch;
+    margin-bottom: 28px;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); font-weight: 590; }
+  .hero-sub {
+    max-width: 56ch;
+    font-size: clamp(16px, 1.3vw, 19px);
+    color: var(--text-2);
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 30px;
+    border-radius: 9999px;
+    font-family: inherit;
+    font-size: 14.5px; font-weight: 510;
+    letter-spacing: -0.13px;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s, box-shadow 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent-bg); color: #ffffff;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 10px 24px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 12px 28px var(--accent-glow);
+    transform: translateY(-1px);
+  }
+  .btn .arrow { transition: transform 220ms ease; }
+  .btn:hover .arrow { transform: translateX(4px); }
+
+  .section {
+    padding: clamp(72px, 12vh, 120px) 0;
+    position: relative;
+  }
+  .section-inner {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px; color: var(--text-muted);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 22px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .section-label .num { color: var(--accent); }
+  .section h2 {
+    font-weight: 510;
+    font-size: clamp(28px, 3.6vw, 46px);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: var(--text);
+    margin-bottom: 18px;
+    max-width: 24ch;
+  }
+  .lead {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.75;
+    margin-bottom: 56px;
+    max-width: 60ch;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px 26px;
+    transition: background 0.25s, border-color 0.25s, transform 0.25s;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+  .card-icon {
+    font-size: 2.2rem;
+    margin-bottom: 16px;
+    transition: transform 0.25s;
+    filter: grayscale(0.15);
+  }
+  .card:hover .card-icon { transform: scale(1.08); filter: grayscale(0); }
+  .card h3 {
+    font-weight: 590;
+    font-size: 1.12rem;
+    color: var(--text);
+    letter-spacing: -0.24px;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .card p { color: var(--text-muted); font-size: 14.5px; line-height: 1.65; }
+
+  .card.pain {
+    border-left: 3px solid var(--danger);
+    background: var(--danger-soft);
+  }
+  .card.pain h3 { color: var(--danger); }
+  .card.pain:hover { border-color: var(--danger); }
+
+  /* Architecture diagram (text-based) */
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 2.0;
+    color: var(--text-2);
+    overflow-x: auto;
+  }
+  .arch-diagram .l1 { color: var(--accent); font-weight: 500; }
+  .arch-diagram .l2 { color: var(--text); }
+  .arch-diagram .note { color: var(--text-muted); font-size: 12px; }
+
+  /* Tech stack tags */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 32px;
+  }
+  .stack-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .stack-card:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .stack-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .stack-value {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 510;
+    letter-spacing: -0.13px;
+    line-height: 1.5;
+  }
+
+  /* Customization options as a 2-col list */
+  .custom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 14px;
+  }
+  .custom-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: baseline;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .custom-row:hover { background: var(--surface-hover); border-color: var(--accent); }
+  .custom-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .custom-val {
+    color: var(--text-2);
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    counter-reset: step;
+  }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px 24px;
+    position: relative;
+    transition: background 0.25s, border-color 0.25s, transform 0.25s;
+  }
+  .step:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+  .step::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    top: -16px; right: 22px;
+    background: var(--accent-bg);
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 6px 14px var(--accent-glow);
+  }
+  .step h3 { font-size: 16px; color: var(--text); margin-bottom: 8px; font-weight: 590; }
+  .step p { color: var(--text-muted); font-size: 13.5px; line-height: 1.6; }
+
+  .pricing {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .price-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 38px 32px;
+    transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    text-align: center;
+    position: relative;
+  }
+  .price-card:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+  .price-card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 16px 40px -16px var(--accent-glow);
+  }
+  .price-card.featured::before {
+    content: "推薦";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-bg);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    box-shadow: 0 6px 14px var(--accent-glow);
+  }
+  .price-card h3 { font-size: 20px; color: var(--text); margin-bottom: 8px; font-weight: 590; letter-spacing: -0.13px; }
+  .price-card .price { font-size: 32px; font-weight: 590; color: var(--text); margin: 16px 0 4px; letter-spacing: -1px; }
+  .price-card .price .unit { font-size: 13px; color: var(--text-muted); font-weight: 400; letter-spacing: 0; }
+  .price-card .desc { color: var(--text-muted); font-size: 13.5px; margin-bottom: 24px; }
+  .price-card ul { list-style: none; text-align: left; padding: 0; }
+  .price-card li {
+    padding: 9px 0;
+    font-size: 13.5px;
+    color: var(--text-2);
+    border-bottom: 1px dashed var(--border-subtle);
+  }
+  .price-card li::before {
+    content: "✓ ";
+    color: var(--success);
+    font-weight: 700;
+  }
+  .price-card li:last-child { border-bottom: none; }
+  .pricing-note {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  details:hover { background: var(--surface-hover); border-color: var(--accent); }
+  details summary {
+    font-weight: 590;
+    color: var(--text);
+    font-size: 15px;
+    letter-spacing: -0.13px;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after {
+    content: "+";
+    font-size: 22px;
+    color: var(--accent);
+    font-weight: 400;
+    transition: transform 0.2s;
+  }
+  details[open] summary::after { content: "−"; }
+  details p {
+    margin-top: 14px;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 26px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.25s, border-color 0.25s, transform 0.25s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .contact-card:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+  .contact-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; color: var(--text-muted);
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .contact-value {
+    font-size: 17px;
+    font-weight: 510;
+    color: var(--text);
+    letter-spacing: -0.13px;
+    word-break: break-all;
+  }
+  .contact-hours {
+    margin-top: 24px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .footer-inner {
+    max-width: var(--max-w); margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+
+  .page-transition {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--bg);
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.7s cubic-bezier(0.7, 0, 0.3, 1);
+    pointer-events: none;
+  }
+  .page-transition.active { transform: translateY(0); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition:
+        opacity 900ms cubic-bezier(0.16,1,0.3,1),
+        transform 900ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+  }
+
+  ::selection { background: var(--accent-soft); color: var(--text); }
+
+  @media (max-width: 880px) {
+    .nav-links { display: none; }
+    .wordmark-en { display: none; }
+    .nav-right { gap: 12px; }
+    .custom-row { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>
+<script>(function(){try{if(localStorage.getItem('cm-theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(_){}})();</script>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="glow-sphere"></div>
+
+<nav class="top">
+  <div class="nav-inner">
+    <a href="../index.html" class="wordmark" data-transition>
+      <img src="../assets/logo.png" alt="澄沐實業有限公司 logo" class="wordmark-logo">
+      <div class="wordmark-text">
+        <span class="wordmark-zh">澄沐實業有限公司</span>
+        <span class="wordmark-en">CHENGMU INDUSTRIAL CO., LTD.</span>
+      </div>
+    </a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="../index.html#services" data-transition>服務</a></li>
+        <li><a href="../index.html#products" data-transition>產品</a></li>
+        <li><a href="../index.html#about" data-transition>關於</a></li>
+        <li><a href="../index.html#contact" data-transition>聯絡</a></li>
+      </ul>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="切換配色模式" title="切換深／淺色">
+        <svg class="icon-sun" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4"/>
+          <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+          <line x1="4.5" y1="4.5" x2="6.5" y2="6.5"/><line x1="17.5" y1="17.5" x2="19.5" y2="19.5"/>
+          <line x1="4.5" y1="19.5" x2="6.5" y2="17.5"/><line x1="17.5" y1="6.5" x2="19.5" y2="4.5"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">BUDGET SYSTEM · 客製化導入 / 內網部署</span>
+    <h1>客製化<em>預算管理系統</em>，<br>貼著你的組織配置。</h1>
+    <p class="hero-sub">不是 SaaS、不是套裝軟體。我們以一套經實戰驗證的預算管理架構為基礎，
+      依您的組織單位、預算類別、簽核流程、報表需求逐項客製，最後部署到您的內網一次完成。</p>
+    <a href="#contact" class="btn btn-primary">洽詢需求訪談 <span class="arrow">→</span></a>
+  </div>
+</header>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">01</span><span>PAIN POINTS — 預算管理的痛</span></div>
+    <h2>Excel 管不動、SaaS 套不準的時候</h2>
+    <p class="lead">預算這件事跨年、跨單位、跨類別、跨人，Excel 撐不住、套裝 SaaS 又貼不上你獨特的組織結構。最後變成「預算規劃靠 Excel、執行靠記憶、檢核靠補單」。</p>
+    <div class="grid">
+      <div class="card pain">
+        <div class="card-icon">📑</div>
+        <h3>Excel 月份分配版本爆炸</h3>
+        <p>業務費要分 12 個月、設備費也要分。改一次就 Save As V3、V4、V5⋯⋯到底哪個是最終版沒人知道。</p>
+      </div>
+      <div class="card pain">
+        <div class="card-icon">🔁</div>
+        <h3>預算流用沒紀錄</h3>
+        <p>主管口頭同意「材料費借調 50 萬到設備費」— 流用了沒寫清楚，年底結算對不起來。</p>
+      </div>
+      <div class="card pain">
+        <div class="card-icon">📉</div>
+        <h3>沒有執行率視覺化</h3>
+        <p>到底現在花了多少？預估能不能達標？要等財務月報才能知道，發現太低都來不及加速採購。</p>
+      </div>
+      <div class="card pain">
+        <div class="card-icon">🗂️</div>
+        <h3>跨年複製麻煩、權限分不清</h3>
+        <p>新年度開始，去年的計畫架構全部要重建一次。不同單位的人能看到誰的資料？沒有權限機制，等於全公司開放。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">02</span><span>FEATURES — 系統具備的核心功能</span></div>
+    <h2>10 大核心模組，全部可依需求調整</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="card-icon">🏛️</div>
+        <h3>多層組織單位</h3>
+        <p>支援「組織 → 單位 → 計畫 → 預算類別 → 月份分配」的多層架構，單位數量、命名、排序可完全客製。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔐</div>
+        <h3>多角色權限隔離</h3>
+        <p>內建 4 種角色：系統管理員 / 主管 / 計畫主持人 / 採購人員。後端 API 強制檢查單位歸屬，跨單位資料天然隔離。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <h3>計畫管理 + 跨年複製</h3>
+        <p>建立計畫、指派成員、設定 PI；新年度按一鍵複製去年架構，預算重設、人員保留、開始新一輪規劃。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💰</div>
+        <h3>預算分配 + 流用紀錄</h3>
+        <p>支援多種預算類型（業務費/設備費）+ 子類別（服務費/材料費⋯⋯）+ 12 月份分配。流用走系統紀錄，每筆都有來源去向，杜絕灰色地帶。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛒</div>
+        <h3>採購案 8 階段全程追蹤</h3>
+        <p>待規劃 → 規劃中 → 簽辦提送 → 已送審 → 已發債 → 已決標 → 已驗收 → 已結案。階段切換時自動寄信通知相關人，結案時自動把預估金額轉為實際金額。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>執行率即時儀表板</h3>
+        <p>多計畫累計折線圖、盈虧柱狀圖、甘特圖、執行率閾值警示。哪個計畫快超支、哪個太慢花一目了然。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <h3>版本快照與還原</h3>
+        <p>任意時點儲存「預算規劃版本」，需要時可一鍵還原。還原前自動建備份，誤操作也救得回來。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📧</div>
+        <h3>Email 排程通知</h3>
+        <p>採購進度變更通知、到期提醒（每日 08:00）、執行率警示（每月 1 日，閾值可設）。寄信紀錄全留檔。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📤</div>
+        <h3>Excel 多工作表匯出</h3>
+        <p>一鍵匯出三工作表 — 摘要 / 類別明細 / 執行率，財務或主管要看時直接給檔。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <h3>一鍵安裝包部署</h3>
+        <p>PowerShell + ZIP 全自動部署：Node.js、MySQL、IIS、URL Rewrite、ARR、Windows 服務、防火牆、站台 — 9 步驟一氣呵成。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">03</span><span>ARCHITECTURE — 系統架構</span></div>
+    <h2>前後端分離，內網一台主機跑得起來</h2>
+    <p class="lead">基於開源主流框架，無雲端依賴。所有資料、後端服務、前端 SPA、資料庫均部署在貴司內網一台主機，搭配 IIS 反代提供使用者瀏覽器存取。</p>
+
+    <div class="arch-diagram">
+<span class="l1">┌─ Frontend (SPA)</span>
+│   <span class="l2">React 18 + Ant Design 5 + Recharts + @dnd-kit</span>
+│   <span class="note">→ build 後輸出 dist/ 靜態檔，由 IIS 直接提供</span>
+│
+<span class="l1">├─ Reverse Proxy</span>
+│   <span class="l2">IIS 10 + URL Rewrite + ARR</span>
+│   <span class="note">→ /api/* 反代到 backend；其餘路徑 SPA fallback</span>
+│
+<span class="l1">├─ Backend (REST API)</span>
+│   <span class="l2">Node.js 20 + Express + JWT + bcryptjs</span>
+│   <span class="l2">node-cron 排程 / nodemailer 通知 / ExcelJS 匯出</span>
+│   <span class="note">→ 由 NSSM 註冊為 Windows 服務開機自啟</span>
+│
+<span class="l1">└─ Database</span>
+    <span class="l2">MySQL 8.0（portable，安裝包內附）</span>
+    <span class="note">→ 純資料層，可選改用既有的 SQL Server / PostgreSQL</span>
+    </div>
+
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-label">FRONTEND</div>
+        <div class="stack-value">React 18 + Ant Design 5 + Recharts</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-label">BACKEND</div>
+        <div class="stack-value">Node.js 20 + Express + JWT</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-label">DATABASE</div>
+        <div class="stack-value">MySQL 8.0（可改 SQL Server）</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-label">DEPLOYMENT</div>
+        <div class="stack-value">IIS + URL Rewrite + NSSM</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-label">REPORTING</div>
+        <div class="stack-value">ExcelJS + Recharts SVG 匯出</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-label">NOTIFICATION</div>
+        <div class="stack-value">node-cron + nodemailer SMTP</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">04</span><span>CUSTOMIZATION — 可客製範圍</span></div>
+    <h2>系統不只是「套用」，是真的「貼著你」</h2>
+    <p class="lead">既有架構提供穩定的模組基礎，導入前我們會一起把以下項目調成你習慣的樣子，而不是你被軟體套牢。</p>
+    <div class="custom-grid">
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 01</span>
+        <span class="custom-val">組織單位命名與層級（部門 / 處 / 課 / 中心 / 研究所⋯⋯）</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 02</span>
+        <span class="custom-val">角色權限定義（4 種預設可擴充至 6-8 種，欄位粒度可調）</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 03</span>
+        <span class="custom-val">預算類別與子類別（業務費/設備費/雜支/人事⋯⋯）</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 04</span>
+        <span class="custom-val">採購進度階段（預設 8 階段可改 4-12 階段）</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 05</span>
+        <span class="custom-val">儀表板圖表種類與閾值（執行率警示百分比、警示色階）</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 06</span>
+        <span class="custom-val">Excel 報表欄位、樣式、工作表分頁邏輯</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 07</span>
+        <span class="custom-val">Email 通知模板、寄送時機、收件人計算邏輯</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 08</span>
+        <span class="custom-val">資料庫類型（MySQL / SQL Server / PostgreSQL）</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 09</span>
+        <span class="custom-val">登入整合（內建 / LDAP / Active Directory / SSO）</span>
+      </div>
+      <div class="custom-row">
+        <span class="custom-key">CUSTOM 10</span>
+        <span class="custom-val">既有系統介接（HR / ERP / 採購系統 API 對接）</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">05</span><span>PROCESS — 客製導入流程</span></div>
+    <h2>5 個階段，從訪談到上線</h2>
+    <div class="steps" style="margin-top: 32px;">
+      <div class="step">
+        <h3>需求訪談</h3>
+        <p>1-2 次線上 / 到府訪談，盤點組織結構、預算流程、簽核習慣、現有資料來源。輸出客製需求書。</p>
+      </div>
+      <div class="step">
+        <h3>客製組態 + 開發</h3>
+        <p>依訪談結果調整資料結構、UI 標籤、流程階段、權限矩陣、報表欄位。預計 2-6 週（視客製深度）。</p>
+      </div>
+      <div class="step">
+        <h3>資料移轉</h3>
+        <p>協助匯入舊 Excel / 舊系統的歷史預算與採購資料。提供 CSV / SQL 匯入工具，第一輪資料正確性對帳。</p>
+      </div>
+      <div class="step">
+        <h3>上線部署 + 教育訓練</h3>
+        <p>到府或遠端部署到貴司內網主機，建立 IIS / 防火牆 / 服務。各角色 1.5-2 小時操作教育訓練。</p>
+      </div>
+      <div class="step">
+        <h3>維護期支援</h3>
+        <p>3-12 個月維護期（依方案），含問題排除、調整微調、版本升級。期滿可續約。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pricing">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">06</span><span>PRICING — 訂價方案</span></div>
+    <h2>三個導入方案，依客製深度選擇</h2>
+    <p class="lead">客製化系統價格依「組織複雜度 × 客製模組數 × 維護期」估算。以下為參考方案，實際報價會在訪談後給出。</p>
+    <div class="pricing">
+      <div class="price-card">
+        <h3>標準導入版</h3>
+        <div class="price">NT$ 80,000<span class="unit"> 起</span></div>
+        <p class="desc">沿用既有架構，調整組態貼合貴司</p>
+        <ul>
+          <li>10 大模組全部交付</li>
+          <li>組織單位 + 角色 + 類別 客製</li>
+          <li>儀表板 + Email + Excel 預設樣式</li>
+          <li>3 個月維護期（email 支援）</li>
+          <li>一鍵安裝包部署</li>
+          <li>1 次教育訓練（線上 2hr）</li>
+        </ul>
+      </div>
+      <div class="price-card featured">
+        <h3>進階客製版</h3>
+        <div class="price">NT$ 150,000<span class="unit"> 起</span></div>
+        <p class="desc">加深客製、新增模組、含 1 年支援</p>
+        <ul>
+          <li>標準版全部內容</li>
+          <li><strong>新增 3-5 個自訂模組</strong>（例：人事費、外部合約）</li>
+          <li><strong>儀表板 / 報表客製</strong>（圖表類型、欄位）</li>
+          <li>LDAP / AD 登入整合</li>
+          <li><strong>1 年維護期</strong>（含 LINE + 月度 1 次調整）</li>
+          <li>到府部署 + 2 次教育訓練（含主管/操作）</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <h3>企業全客製</h3>
+        <div class="price">面議</div>
+        <p class="desc">大型組織、多單位整合、長期合約</p>
+        <ul>
+          <li>進階版全部內容</li>
+          <li>多單位 / 多公司資料隔離</li>
+          <li>HR / ERP / 採購系統 API 介接</li>
+          <li>SSO 單一登入整合</li>
+          <li>客製報表 / BI 串接</li>
+          <li>長期維護合約（年費制）</li>
+        </ul>
+      </div>
+    </div>
+    <p class="pricing-note">
+      ※ 上述為單次建置費用，不含維護期過後的版本升級或新功能開發<br>
+      ※ 系統部署在「貴司內網主機 / 全體同仁瀏覽器使用」，不限使用人數
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">07</span><span>FAQ — 常見問題</span></div>
+    <h2>常見問題</h2>
+    <div style="margin-top: 32px;">
+      <details>
+        <summary>跟現成 SaaS 預算系統有什麼不同？</summary>
+        <p>SaaS 是「你配合軟體」 — 組織命名、流程階段、報表欄位都得遷就軟體既定樣式。我們是「軟體配合你」 — 從組織單位到簽核流程都依貴司現況設計。代價是建置時間較長（4-8 週 vs SaaS 開帳號就能用）但長期省去「人配合系統」的隱形成本。</p>
+      </details>
+      <details>
+        <summary>系統會放在我們公司內網嗎？資料安全如何？</summary>
+        <p>是的，整套部署在貴司內網一台主機（或 VM）。前端 SPA、後端 API、MySQL 資料庫全部本機執行，無雲端依賴。日常運作不需要對外網路，瀏覽器透過內網或 VPN 存取。資料庫備份、權限管理由貴司 IT 掌握。</p>
+      </details>
+      <details>
+        <summary>可以接我們既有的 HR / ERP 系統嗎？</summary>
+        <p>可以。屬於企業全客製範圍。常見介接：HR 系統同步員工資料、ERP 拉預算與實際支出、採購系統推送決標結果。介接方式以 REST API 或 SQL view 為主，視貴司既有系統而定。</p>
+      </details>
+      <details>
+        <summary>建置完成後，未來我們想自己加功能可以嗎？</summary>
+        <p>可以。我們交付完整原始碼（前端 + 後端 + DB schema + 部署腳本），不綁授權、不藏關鍵程式。貴司若有 Node.js / React 工程師可自行擴充。我們也可在維護合約內持續開發。</p>
+      </details>
+      <details>
+        <summary>多少人可以同時使用？需要按帳號數加價嗎？</summary>
+        <p>不需要。系統部署在貴司內網一台主機，使用人數無限制（受限於該主機效能）。實測一台中階伺服器可支撐 50-100 位使用者同時存取無壓力。</p>
+      </details>
+      <details>
+        <summary>需要哪種伺服器規格？</summary>
+        <p>Windows Server 2019 / 2022（或 Windows 10/11 Pro 也可）、4 核心 CPU、8GB RAM、100GB 硬碟即可起步。Ubuntu / RedHat 也支援，但需另議部署腳本（既有為 Windows 一鍵包）。</p>
+      </details>
+      <details>
+        <summary>導入週期通常多久？</summary>
+        <p>標準版約 4-6 週、進階版 6-10 週、全客製 8-16 週。以「需求訪談 → 客製開發 → 內測 → 教育訓練 → 上線」五階段切，每階段都有里程碑驗收。</p>
+      </details>
+      <details>
+        <summary>付款方式？</summary>
+        <p>分三期：簽約 30%（啟動）/ 內測完成 40%（功能交付）/ 上線驗收 30%。可開立發票、可接公司對公司付款。簽約後到上線約 1.5-3 個月。</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">08</span><span>CONTACT — 來聊聊你的需求</span></div>
+    <h2>來聊聊你的<em>預算流程</em></h2>
+    <p class="lead">第一次訪談免費，30-60 分鐘了解你目前的痛點與規模，再評估適合哪一版方案。</p>
+    <div class="contact-grid">
+      <a href="mailto:chengmu00082998@gmail.com?subject=詢問%20客製化預算管理系統" class="contact-card">
+        <span class="contact-label">EMAIL</span>
+        <span class="contact-value">chengmu00082998@gmail.com</span>
+      </a>
+      <a href="https://line.me/R/ti/p/@378vuckv" target="_blank" rel="noopener" class="contact-card">
+        <span class="contact-label">LINE OFFICIAL</span>
+        <span class="contact-value">@378vuckv</span>
+      </a>
+      <a href="tel:0952159801" class="contact-card">
+        <span class="contact-label">PHONE</span>
+        <span class="contact-value">0952-159-801</span>
+      </a>
+    </div>
+    <p class="contact-hours">回覆時間：週一至週五 09:00-18:00</p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span>© 2026 澄沐實業有限公司 / CHENGMU INDUSTRIAL CO., LTD.</span>
+    <span>Budget System — 客製化預算管理系統</span>
+  </div>
+</footer>
+
+<div class="page-transition" id="loader"></div>
+
+<script>
+  function toggleTheme() {
+    var root = document.documentElement;
+    var curr = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    var next = curr === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('cm-theme', next); } catch (_) {}
+  }
+
+  const loader = document.getElementById('loader');
+  document.querySelectorAll('a[data-transition]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const href = a.getAttribute('href');
+      if (!href) return;
+      e.preventDefault();
+      loader.classList.add('active');
+      setTimeout(() => { window.location.href = href; }, 700);
+    });
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    const sphere = document.querySelector('.glow-sphere');
+    if (!sphere) return;
+    const x = (e.clientX / window.innerWidth - 0.5) * 60;
+    const y = (e.clientY / window.innerHeight - 0.5) * 60;
+    sphere.style.transform = `translate(${x}px, ${y}px)`;
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.section h2, .section .lead, .section .grid, .section .arch-diagram, .section .stack-grid, .section .custom-grid, .section .steps, .section .pricing, .section .pricing-note, .section details, .contact-grid')
+    .forEach(el => { el.classList.add('reveal'); io.observe(el); });
+</script>
+
+</body>
+</html>
