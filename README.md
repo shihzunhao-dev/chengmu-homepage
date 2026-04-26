@@ -8,13 +8,16 @@
 
 ```
 chengmu_homepage/
-├── index.html                          首頁（暗色預設 + 淺色切換）
+├── index.html                          首頁（含聯絡表單）
 ├── assets/
 │   └── logo.png                        公司 logo（</> 漸層）
 ├── products/
 │   ├── pcc-tender-watch.html           政府採購標案監控
 │   ├── my-health-bank.html             家庭存摺
 │   └── budget-system.html              客製化預算管理系統
+├── worker/
+│   ├── contact.js                      Cloudflare Worker — 聯絡表單後端
+│   └── DEPLOY.md                       Worker 部署指南（Resend API + 環境變數）
 └── README.md
 ```
 
@@ -37,19 +40,38 @@ python -m http.server 3500
 
 ## 部署
 
-### Cloudflare Pages（推薦）
+### GitHub Pages（已部署 ✅）
 
-1. 推到 GitHub
-2. dash.cloudflare.com → Workers & Pages → Create → Pages → Connect to Git
-3. Build command 留空、Output directory `/`
-4. 取得 `https://chengmu-homepage.pages.dev`
-5. （可選）綁自訂網域
+🟢 **https://shihzunhao-dev.github.io/chengmu-homepage/**
 
-### GitHub Pages
+push 到 main 後 30-60 秒自動更新。
 
-1. 推到 GitHub
-2. Repo Settings → Pages → Source: main branch / root
-3. 取得 `https://<user>.github.io/<repo>/`
+### Cloudflare Pages（升級用，可同時並存）
+
+更快、無頻寬上限、更接近 Worker 生態：
+
+1. 登入 <https://dash.cloudflare.com> → **Workers & Pages** → **Create** → **Pages**
+2. **Connect to Git** → 授權 GitHub → 選 `chengmu-homepage` repo
+3. Build 設定：
+   - Framework preset: **None**
+   - Build command: **(留空)**
+   - Build output directory: **`/`**
+4. **Save and Deploy** → 30 秒後拿到 `https://chengmu-homepage.pages.dev`
+5. （可選）**Custom domains** → 綁自訂網域，自動發 SSL
+
+### 聯絡表單 Worker（必要：表單才能寄信）
+
+詳見 [`worker/DEPLOY.md`](worker/DEPLOY.md)。流程摘要：
+
+1. 申請 [Resend](https://resend.com) 拿 API key（免費 3000 封/月）
+2. dash.cloudflare.com → 建 Worker `chengmu-contact` → 貼 `worker/contact.js`
+3. Worker Settings → Variables 加：
+   - `RESEND_API_KEY` (Secret)
+   - `RECIPIENT_EMAIL` (Plain) = chengmu00082998@gmail.com
+   - `ALLOWED_ORIGINS` (Plain) = `https://shihzunhao-dev.github.io,https://chengmu-homepage.pages.dev`
+4. 完成後 `index.html` 內的 `CONTACT_WORKER_URL` 對齊 Worker 實際 URL
+
+→ Worker 沒部署前，表單會顯示「網路錯誤」；用戶可改用 Email / LINE / 電話三張卡片直接聯絡（仍可正常用）。
 
 ## 聯絡
 

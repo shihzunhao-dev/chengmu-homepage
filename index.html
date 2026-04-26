@@ -578,6 +578,96 @@
     word-break: break-all;
   }
 
+  /* ── Contact form ───────────────────────────────────── */
+  .contact-divider {
+    display: flex; align-items: center; gap: 16px;
+    margin: 48px 0 28px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .contact-divider::before,
+  .contact-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: var(--border);
+  }
+
+  .contact-form {
+    max-width: 720px;
+    display: flex; flex-direction: column;
+    gap: 16px;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-field {
+    display: flex; flex-direction: column;
+    gap: 6px;
+  }
+  .form-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .form-label .req { color: var(--accent); margin-left: 2px; }
+  .contact-form input,
+  .contact-form textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    letter-spacing: -0.13px;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    outline: none;
+    resize: vertical;
+    width: 100%;
+  }
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    border-color: var(--accent);
+    background: var(--surface-hover);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .contact-form textarea {
+    min-height: 130px;
+    line-height: 1.6;
+  }
+  .form-honeypot {
+    position: absolute; left: -9999px;
+    width: 1px; height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .form-actions {
+    display: flex; align-items: center;
+    gap: 18px; flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .form-status {
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .form-status.ok  { color: #10b981; }
+  .form-status.err { color: #ef4444; }
+  .contact-form button[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+  @media (max-width: 700px) {
+    .form-row { grid-template-columns: 1fr; }
+  }
+
   /* ── Footer ─────────────────────────────────────────────── */
   footer {
     border-top: 1px solid var(--border);
@@ -907,6 +997,43 @@
         <span class="contact-value">0952-159-801</span>
       </a>
     </div>
+
+    <div class="contact-divider"><span>或填表單給我們</span></div>
+
+    <form class="contact-form" id="contactForm" novalidate>
+      <div class="form-row">
+        <label class="form-field">
+          <span class="form-label">姓名<span class="req">*</span></span>
+          <input name="name" required maxlength="100" autocomplete="name">
+        </label>
+        <label class="form-field">
+          <span class="form-label">公司 / 單位</span>
+          <input name="company" maxlength="100" autocomplete="organization">
+        </label>
+      </div>
+      <div class="form-row">
+        <label class="form-field">
+          <span class="form-label">Email<span class="req">*</span></span>
+          <input name="email" type="email" required maxlength="200" autocomplete="email">
+        </label>
+        <label class="form-field">
+          <span class="form-label">電話</span>
+          <input name="phone" maxlength="50" autocomplete="tel">
+        </label>
+      </div>
+      <label class="form-field">
+        <span class="form-label">訊息<span class="req">*</span></span>
+        <textarea name="message" rows="5" required maxlength="5000" placeholder="想聊什麼？例如：我想看 PCC Tender Watch 的 demo / 我們公司有預算系統客製需求 / 想問家庭存摺能不能裝在 Mac..."></textarea>
+      </label>
+      <!-- Honeypot — bot 會填、人不會看到 -->
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="form-honeypot" aria-hidden="true">
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="contactSubmit">
+          送出訊息 <span class="arrow">→</span>
+        </button>
+        <span class="form-status" id="formStatus" role="status" aria-live="polite"></span>
+      </div>
+    </form>
   </div>
 </section>
 
@@ -962,8 +1089,50 @@
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
   // Auto-fade in non-hero sections via reveal
-  document.querySelectorAll('.section h2, .section .section-deck, .section .grid, .section .products-grid, .section .about-grid, .contact-grid')
+  document.querySelectorAll('.section h2, .section .section-deck, .section .grid, .section .products-grid, .section .about-grid, .contact-grid, .contact-form')
     .forEach(el => { el.classList.add('reveal'); io.observe(el); });
+
+  // ── Contact form submission ────────────────────────────
+  // ⚠️ 部署後改成你 Worker 的實際 URL（看 Cloudflare dashboard）
+  const CONTACT_WORKER_URL = 'https://chengmu-contact.chengmu00082998.workers.dev/';
+
+  const form = document.getElementById('contactForm');
+  const statusEl = document.getElementById('formStatus');
+  const submitBtn = document.getElementById('contactSubmit');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+
+      submitBtn.disabled = true;
+      statusEl.className = 'form-status';
+      statusEl.textContent = '送出中⋯';
+
+      try {
+        const resp = await fetch(CONTACT_WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const result = await resp.json().catch(() => ({ ok: false, error: '無效回應' }));
+
+        if (resp.ok && result.ok) {
+          statusEl.className = 'form-status ok';
+          statusEl.textContent = '✓ 已送出，我們會在 1 個工作天內回覆';
+          form.reset();
+        } else {
+          statusEl.className = 'form-status err';
+          statusEl.textContent = '✗ ' + (result.error || '送出失敗，請改用 Email 或 LINE');
+        }
+      } catch (err) {
+        statusEl.className = 'form-status err';
+        statusEl.textContent = '✗ 網路錯誤，請改用 Email 或 LINE 直接聯絡';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  }
 </script>
 
 </body>
