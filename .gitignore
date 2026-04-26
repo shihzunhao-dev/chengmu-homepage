@@ -30,3 +30,6 @@ _backup_*.zip
 .env.local
 *.pem
 *.key
+
+# Wrangler local cache (per-machine state, not for git)
+.wrangler/
