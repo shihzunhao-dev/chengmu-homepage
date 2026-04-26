@@ -40,24 +40,43 @@ python -m http.server 3500
 
 ## 部署
 
+### 🚀 一鍵部署：`deploy.ps1`
+
+兩條部署路徑一個指令同時跑：
+
+```powershell
+.\deploy.ps1 "feat: 新增聯絡表單"
+# 或
+.\deploy.ps1                # 互動式問你 commit message
+```
+
+選項：
+- `-SkipGit`：只推 CF Pages、不動 git
+- `-SkipPages`：只 push GitHub、不推 CF Pages
+
+完成後會印兩個 production URL 確認。
+
 ### GitHub Pages（已部署 ✅）
 
 🟢 **https://shihzunhao-dev.github.io/chengmu-homepage/**
 
 push 到 main 後 30-60 秒自動更新。
 
-### Cloudflare Pages（升級用，可同時並存）
+### Cloudflare Pages（已部署 ✅）
 
-更快、無頻寬上限、更接近 Worker 生態：
+🟢 **https://chengmu-homepage.pages.dev/**
 
-1. 登入 <https://dash.cloudflare.com> → **Workers & Pages** → **Create** → **Pages**
-2. **Connect to Git** → 授權 GitHub → 選 `chengmu-homepage` repo
-3. Build 設定：
-   - Framework preset: **None**
-   - Build command: **(留空)**
-   - Build output directory: **`/`**
-4. **Save and Deploy** → 30 秒後拿到 `https://chengmu-homepage.pages.dev`
-5. （可選）**Custom domains** → 綁自訂網域，自動發 SSL
+`wrangler pages deploy` 後 ~10 秒生效。
+
+### Cloudflare Pages 部署紀錄（已上線，技術備忘）
+
+走 wrangler CLI 直推（CF dashboard 的 Connect-to-Git OAuth 有 bug）：
+```powershell
+wrangler login                                    # 一次就好
+wrangler pages project create chengmu-homepage --production-branch=main
+wrangler pages deploy . --project-name=chengmu-homepage --branch=main --commit-dirty=true
+```
+之後用 `.\deploy.ps1` 一行就好。
 
 ### 聯絡表單 Worker（必要：表單才能寄信）
 
