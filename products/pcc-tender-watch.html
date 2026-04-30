@@ -243,6 +243,16 @@
     box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 12px 28px var(--accent-glow);
     transform: translateY(-1px);
   }
+  .btn-secondary {
+    background: transparent; color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-secondary:hover {
+    background: var(--surface-hover, rgba(255,255,255,0.04));
+    border-color: var(--text-muted);
+    transform: translateY(-1px);
+  }
+  .hero-cta { display: inline-flex; flex-wrap: wrap; gap: 12px; align-items: center; }
   .btn .arrow { transition: transform 220ms ease; }
   .btn:hover .arrow { transform: translateX(4px); }
 
@@ -663,7 +673,10 @@
     <span class="badge">PCC TENDER WATCH · Windows 桌面 + 內網共用</span>
     <h1>把政府標案線索<br>從每天 1 小時，<br>變成 <em>5 秒</em></h1>
     <p class="hero-sub">每日自動抓取政府電子採購網全部「公開徵求」與「公開招標」。業務團隊用瀏覽器即時搜尋，永久授權，一次買斷。</p>
-    <a href="#contact" class="btn btn-primary">立即諮詢報價 <span class="arrow">→</span></a>
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-primary">立即諮詢報價 <span class="arrow">→</span></a>
+      <a href="pcc-tender-watch-demo.html" class="btn btn-secondary" target="_blank" rel="noopener">🎯 試玩 Demo <span class="arrow">→</span></a>
+    </div>
   </div>
 </header>
 
