@@ -131,6 +131,60 @@
         "一鍵安裝包部署、無雲端依賴"
       ],
       "publisher": { "@id": "https://chengmu-homepage.pages.dev/#organization" }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://chengmu-homepage.pages.dev/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "一個客製專案大概要多久？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "看範圍。一個內部報表工具大概 2 到 3 週、一套完整的工單簽核系統 2 到 4 個月、舊系統翻新加新功能 3 到 6 個月。澄沐實業會在訪談後給明確的時程與里程碑，不灌水也不畫大餅。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "可以只買 PCC Tender Watch，不接客製案嗎？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "可以。自有產品（PCC Tender Watch、家庭存摺、預算系統）都是獨立販售，不綁客製專案。買了之後不滿意，14 天內可遠端鎖序號退費，沒有長期合約。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "為什麼產品堅持買斷不做訂閱？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "一個工具值不值得做的標準，是它在十年後仍然能用。訂閱會讓使用者被軟體公司綁架，買斷則把控制權還給使用者。澄沐自有產品都設計成可純本機運作，不靠雲端伺服器續命，伺服器關掉了軟體照樣能跑。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "支援哪些產業？非核能電力光電的中小企業可以接嗎？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "可以。澄沐最熟核能、電力、光電產業的內部流程（工單、簽核、報表、LDAP 整合、廠房資料庫），但客製專案本身不限產業，一般中小企業的 ERP 整合、預算管理、報表自動化、舊網站翻新都接過。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "我們公司有套很舊的 ASP.NET Web Forms 系統，可以接手維護或現代化嗎？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "可以，這是澄沐的主力之一。從 IIS 部署、SQL Server 舊資料庫遷移、報表 PDF/Excel 輸出，到逐步把前端抽換成 React、後端換成 FastAPI 的漸進式現代化都能做。沒人想接的、文件不全的、規格還沒定的，反而是我們擅長的案型。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "自有產品要連雲端嗎？資料會被傳出去嗎？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "不需要連雲端、資料不會傳出去。PCC Tender Watch、家庭存摺、預算系統都設計成可純本機或內網運作，病歷、預算、標案資料都留在使用者的電腦或公司主機，不經過第三方伺服器。授權驗證會做一次線上 HMAC 握手，握手完之後離線也能用。"
+          }
+        }
+      ]
     }
   ]
 }
@@ -652,6 +706,48 @@
     font-size: 13.5px;
   }
 
+  /* ── FAQ ────────────────────────────────────────────────── */
+  .faq-list {
+    display: grid;
+    gap: 0;
+    max-width: 880px;
+  }
+  .faq-item {
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .faq-item:last-child { border-bottom: 1px solid var(--border); }
+  .faq-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.16em;
+    padding-top: 8px;
+  }
+  .faq-q {
+    font-family: inherit;
+    font-weight: 590;
+    font-size: 21px;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    margin: 0 0 14px 0;
+    line-height: 1.35;
+  }
+  .faq-a {
+    color: var(--text-2);
+    font-size: 15.5px;
+    line-height: 1.78;
+    margin: 0;
+  }
+  @media (max-width: 700px) {
+    .faq-item { grid-template-columns: 50px 1fr; gap: 18px; padding: 26px 0; }
+    .faq-q { font-size: 18px; }
+  }
+
   /* ── Contact ────────────────────────────────────────────── */
   .contact { padding: clamp(100px, 16vh, 160px) 0 clamp(80px, 12vh, 120px); }
   .contact h2 {
@@ -879,6 +975,7 @@
         <li><a href="#services">服務</a></li>
         <li><a href="#products">產品</a></li>
         <li><a href="#about">關於</a></li>
+        <li><a href="#faq">常見問題</a></li>
         <li><a href="#contact">聯絡</a></li>
       </ul>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="切換配色模式" title="切換深／淺色">
@@ -1105,9 +1202,91 @@
   </div>
 </section>
 
+<section id="faq" class="section">
+  <div class="section-inner">
+    <div class="section-label"><span class="num">04</span><span>FAQ — 常見問題</span></div>
+    <h2>客戶最常問<br>我們的<em>那些事</em>。</h2>
+    <p class="section-deck">
+      把訪談時最常被問到的六個問題、跟我們最常給的真實答案放在這裡。
+      其他細節歡迎直接 Email、LINE、電話聊。
+    </p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <span class="faq-num">Q.01</span>
+        <div>
+          <h3 class="faq-q">一個客製專案大概要多久？</h3>
+          <p class="faq-a">
+            看範圍。一個內部報表工具大概 2 到 3 週、一套完整的工單簽核系統 2 到 4 個月、
+            舊系統翻新加新功能 3 到 6 個月。我們會在訪談後給你明確的時程與里程碑，不灌水也不畫大餅。
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <span class="faq-num">Q.02</span>
+        <div>
+          <h3 class="faq-q">可以只買 PCC Tender Watch，不接客製案嗎？</h3>
+          <p class="faq-a">
+            可以。自有產品（PCC Tender Watch、家庭存摺、預算系統）都是獨立販售，不綁客製專案。
+            買了之後不滿意，14 天內可遠端鎖序號退費 — 我們把錢退回給你，雙方乾脆，沒有長期合約。
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <span class="faq-num">Q.03</span>
+        <div>
+          <h3 class="faq-q">為什麼產品堅持買斷不做訂閱？</h3>
+          <p class="faq-a">
+            一個工具值不值得做的標準，是它「在你忘了我們公司還在不在的十年後，仍然能用」。
+            訂閱會讓你被軟體公司綁架，買斷則把控制權還給你。我們的產品都設計成可純本機運作，
+            不靠雲端伺服器續命，伺服器關掉了你的軟體照樣能跑。
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <span class="faq-num">Q.04</span>
+        <div>
+          <h3 class="faq-q">支援哪些產業？非核能電力光電的中小企業可以接嗎？</h3>
+          <p class="faq-a">
+            可以。我們最熟核能、電力、光電產業的內部流程（工單、簽核、報表、LDAP 整合、廠房資料庫），
+            但客製專案本身不限產業 — 一般中小企業的 ERP 整合、預算管理、報表自動化、
+            舊網站翻新，都是我們接過的案子。
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <span class="faq-num">Q.05</span>
+        <div>
+          <h3 class="faq-q">我們公司有套很舊的 ASP.NET Web Forms 系統，可以接手維護或現代化嗎？</h3>
+          <p class="faq-a">
+            可以，這是我們的主力之一。從 IIS 部署、SQL Server 舊資料庫遷移、報表 PDF/Excel 輸出，
+            到逐步把前端抽換成 React + 後端換成 FastAPI 的「漸進式現代化」都做得來。
+            沒人想接的、文件不全的、規格還沒定的，反而是我們的菜。
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <span class="faq-num">Q.06</span>
+        <div>
+          <h3 class="faq-q">自有產品要連雲端嗎？資料會被傳出去嗎？</h3>
+          <p class="faq-a">
+            不需要連雲端、資料不會傳出去。PCC Tender Watch、家庭存摺、預算系統都設計成可純本機或內網運作 —
+            病歷資料、預算資料、標案資料都留在你的電腦或公司主機，不經過第三方伺服器。
+            授權驗證會做一次線上 HMAC 握手，握手完之後離線也能用。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="contact" class="contact section">
   <div class="section-inner">
-    <div class="section-label"><span class="num">04</span><span>CONTACT — 聯絡</span></div>
+    <div class="section-label"><span class="num">05</span><span>CONTACT — 聯絡</span></div>
     <h2>來信聊聊<br>你那套<em>該換的系統</em>。</h2>
     <div class="contact-grid">
       <a href="mailto:chengmu00082998@gmail.com" class="contact-card">
