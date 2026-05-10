@@ -1,0 +1,62 @@
+# 澄沐實業有限公司 / CHENGMU INDUSTRIAL CO., LTD.
+# robots.txt — 允許主要搜尋引擎與 AI 爬蟲
+
+# ── 一般搜尋引擎 ─────────────────────────────
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# ── AI 爬蟲（明確允許訓練 / 引用） ──────────────
+# OpenAI（ChatGPT 訓練 + 即時 browse）
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic（Claude）
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Google 生成式 AI（Bard / Gemini / AI Overview）
+User-agent: Google-Extended
+Allow: /
+
+# Common Crawl（多家 LLM 訓練資料來源）
+User-agent: CCBot
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+# ── 預設 ────────────────────────────────
+User-agent: *
+Allow: /
+
+Sitemap: https://chengmu-homepage.pages.dev/sitemap.xml
