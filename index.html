@@ -19,6 +19,15 @@
 <link rel="canonical" href="https://chengmu-homepage.pages.dev/">
 <link rel="icon" type="image/png" href="assets/logo.png">
 
+<!-- ── Mobile / PWA meta ──────────────────────────────── -->
+<meta name="theme-color" content="#08090a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)">
+<link rel="apple-touch-icon" href="assets/logo.png">
+<meta name="apple-mobile-web-app-title" content="澄沐">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+
 <!-- ── Schema.org JSON-LD（SEO / GEO / AEO 結構化資料） ────────── -->
 <script type="application/ld+json">
 {
@@ -191,7 +200,9 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- 非阻塞載入 Google Fonts：字重已精簡（Inter 6→3、Noto TC 3→2、Mono 2 不變） -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;510;590&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;510;590&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500&display=swap"></noscript>
 <style>
   :root {
     --bg: #08090a;
@@ -964,7 +975,7 @@
 <nav class="top">
   <div class="nav-inner">
     <a href="#top" class="wordmark">
-      <img src="assets/logo.png" alt="澄沐實業有限公司 logo" class="wordmark-logo">
+      <img src="assets/logo.png" alt="澄沐實業有限公司 logo" class="wordmark-logo" width="79" height="44" fetchpriority="high">
       <div class="wordmark-text">
         <span class="wordmark-zh">澄沐實業有限公司</span>
         <span class="wordmark-en">CHENGMU INDUSTRIAL CO., LTD.</span>
