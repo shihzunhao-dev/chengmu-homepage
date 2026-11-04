@@ -98,6 +98,7 @@ if (-not $SkipPages) {
     # 網站白名單：只有這些會上線。新增網站檔案時要加進來。
     $SiteFiles = @(
         'index.html',
+        '404.html',
         'robots.txt',
         'sitemap.xml',
         'assets\logo.svg',
