@@ -31,7 +31,7 @@ if ($Days -gt 0) {
     $since = (Get-Date).ToUniversalTime().AddDays(-$Days).ToString('yyyy-MM-ddTHH:mm:ss')
     $where = "WHERE created_at >= '$since'"
 }
-$sql = "SELECT id, conversation_id, created_at, role, content, country, city, usage FROM chat_messages $where ORDER BY id"
+$sql = "SELECT id, conversation_id, created_at, role, content, country, city, usage, ip FROM chat_messages $where ORDER BY id"
 
 Write-Host "讀取 D1 資料庫 $Database ..." -ForegroundColor Cyan
 $raw = wrangler d1 execute $Database --remote --json --command $sql 2>$null
@@ -61,6 +61,7 @@ $records = foreach ($r in $rows) {
         '時間'     = [TimeZoneInfo]::ConvertTimeFromUtc($utc, $tw).ToString('yyyy-MM-dd HH:mm:ss')
         '角色'     = switch ($r.role) { 'user' { '客人' } 'assistant' { '助理' } default { '錯誤' } }
         '內容'     = $r.content
+        'IP'       = if ($r.ip) { $r.ip } else { '未記錄' }
         '地區'     = (@($r.country, $r.city) | Where-Object { $_ }) -join ' '
         '用量'     = $r.usage
     }
@@ -80,7 +81,7 @@ $groups = $records | Group-Object '對話編號' | Sort-Object { ($_.Group | Sel
 foreach ($g in $groups) {
     $first = $g.Group | Select-Object -First 1
     $questions = @($g.Group | Where-Object { $_.'角色' -eq '客人' }).Count
-    [void]$sb.AppendLine("## $($first.'時間')　$($first.'地區')　（$questions 個提問）")
+    [void]$sb.AppendLine("## $($first.'時間')　IP $($first.'IP')　$($first.'地區')　（$questions 個提問）")
     [void]$sb.AppendLine("對話編號：$($g.Name)")
     [void]$sb.AppendLine()
     foreach ($m in $g.Group) {
