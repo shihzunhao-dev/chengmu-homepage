@@ -84,7 +84,8 @@ export default {
         model: MODEL,
         max_tokens: 800,
         thinking: { type: "disabled" },
-        output_config: { effort: "low" },
+        // 直接面對客戶，準確優先：effort high（thinking disabled 在 low–high 都有效）
+        output_config: { effort: "high" },
         system: [
           { type: "text", text: RULES },
           { type: "text", text: `# 服務說明\n\n${KNOWLEDGE}`, cache_control: { type: "ephemeral" } },

@@ -92,6 +92,8 @@
   .cad-cursor.on .cad-x, .cad-cursor.on .cad-y { opacity: .16; }
   .cad-cursor .cad-x { top: 0; bottom: 0; width: 1px; left: 0; }
   .cad-cursor .cad-y { left: 0; right: 0; height: 1px; top: 0; }
+  /* 格子特效畫布：疊在方格紙上、內容之下，不攔截滑鼠 */
+  .grid-fx { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
   .card { min-height: 100vh; max-width: 1080px; margin: 0 auto; padding: 48px 40px 120px; display: grid; grid-template-rows: auto 1fr auto; }
   .top { display: flex; justify-content: space-between; font-size: 15px; font-weight: 500; color: var(--muted); letter-spacing: .1em; }
@@ -294,6 +296,128 @@
     document.addEventListener('mouseleave', function () { wrap.classList.remove('on'); });
     window.addEventListener('blur', function () { wrap.classList.remove('on'); });
   }
+
+  // 格子特效：滑鼠經過的格子亮起 logo 色階；點擊格子讓它受重力掉落
+  (function gridFx() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var CELL = 26;                 // 與 body::before 的 background-size 一致
+    var HOVER_MS = 700;            // 亮起後淡出的時間
+    var HOLE_MS = 1600;            // 掉落後原位空洞淡出的時間
+    var GRAVITY = 0.6;             // px / frame²（以 60fps 為基準）
+    var MAX_FALLING = 60;
+    // logo 漸層由左到右的色帶：左側黃綠 → 中間斜線深綠到藍 → 右側藍到青
+    var STOPS = ['#FFFF00', '#EFF836', '#ACD72F', '#81B72E', '#679929', '#3E6921',
+                 '#267378', '#1B7291', '#0F70AA', '#0E87C6', '#00A0E0', '#00BFF4', '#03E6F9'];
+    var PALETTE = buildPalette(STOPS, 64);
+
+    function hexToRgb(h) { var n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+    function buildPalette(stops, n) {
+      var rgb = stops.map(hexToRgb), out = [];
+      for (var i = 0; i < n; i++) {
+        var p = i / (n - 1) * (rgb.length - 1), k = Math.min(Math.floor(p), rgb.length - 2), f = p - k;
+        var a = rgb[k], b = rgb[k + 1];
+        out.push('rgb(' + Math.round(a[0] + (b[0] - a[0]) * f) + ',' + Math.round(a[1] + (b[1] - a[1]) * f) + ',' + Math.round(a[2] + (b[2] - a[2]) * f) + ')');
+      }
+      return out;
+    }
+
+    var canvas = document.createElement('canvas');
+    canvas.className = 'grid-fx';
+    canvas.setAttribute('aria-hidden', 'true');
+    document.body.insertBefore(canvas, document.body.firstChild);
+    var ctx = canvas.getContext('2d');
+    var W = 0, H = 0, raf = 0, last = 0;
+    var lit = new Map();           // 'c,r' -> { c, r, t }
+    var falling = [];              // { x, y, vx, vy, rot, vr, color }
+    var holes = [];                // { c, r, t }
+
+    function resize() {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      kick();
+    }
+    function colorFor(c) {
+      var cols = Math.max(1, Math.ceil(W / CELL));
+      return PALETTE[Math.max(0, Math.min(63, Math.floor(c / cols * 64)))];
+    }
+    function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+
+    function frame(now) {
+      raf = 0;
+      var dt = Math.min((now - last) / 16.667, 3); last = now;
+      ctx.clearRect(0, 0, W, H);
+
+      holes = holes.filter(function (h) { return now - h.t < HOLE_MS; });
+      holes.forEach(function (h) {
+        ctx.fillStyle = 'rgba(27,29,31,' + (0.12 * (1 - (now - h.t) / HOLE_MS)) + ')';
+        ctx.fillRect(h.c * CELL + 1, h.r * CELL + 1, CELL - 1, CELL - 1);
+      });
+
+      lit.forEach(function (v, key) {
+        var age = now - v.t;
+        if (age > HOVER_MS) { lit.delete(key); return; }
+        ctx.globalAlpha = 0.55 * (1 - age / HOVER_MS);
+        ctx.fillStyle = colorFor(v.c);
+        ctx.fillRect(v.c * CELL + 1, v.r * CELL + 1, CELL - 1, CELL - 1);
+      });
+      ctx.globalAlpha = 1;
+
+      falling = falling.filter(function (p) { return p.y < H + CELL * 2; });
+      falling.forEach(function (p) {
+        p.vy += GRAVITY * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+        ctx.save();
+        ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-(CELL - 1) / 2, -(CELL - 1) / 2, CELL - 1, CELL - 1);
+        ctx.strokeStyle = 'rgba(43,76,126,0.35)';
+        ctx.strokeRect(-(CELL - 1) / 2, -(CELL - 1) / 2, CELL - 1, CELL - 1);
+        ctx.restore();
+      });
+
+      if (lit.size || falling.length || holes.length) raf = requestAnimationFrame(frame);
+    }
+
+    // 滑鼠經過：沿著移動路徑點亮格子（移動很快時也不會跳格）
+    if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+      var lx = null, ly = null;
+      window.addEventListener('mousemove', function (ev) {
+        var x = ev.clientX, y = ev.clientY, now = performance.now();
+        var steps = lx === null ? 1 : Math.max(1, Math.ceil(Math.hypot(x - lx, y - ly) / (CELL / 2)));
+        for (var i = 1; i <= steps; i++) {
+          var px = lx === null ? x : lx + (x - lx) * i / steps;
+          var py = ly === null ? y : ly + (y - ly) * i / steps;
+          var c = Math.floor(px / CELL), r = Math.floor(py / CELL);
+          lit.set(c + ',' + r, { c: c, r: r, t: now });
+        }
+        lx = x; ly = y;
+        kick();
+      }, { passive: true });
+      document.addEventListener('mouseleave', function () { lx = ly = null; });
+    }
+
+    // 點擊格子：先往上輕彈，再受重力旋轉掉出畫面；點連結、按鈕、對話框時不觸發
+    window.addEventListener('pointerdown', function (ev) {
+      if (ev.button !== 0) return;
+      if (ev.target.closest && ev.target.closest('a, button, input, textarea, .panel, .fab')) return;
+      var c = Math.floor(ev.clientX / CELL), r = Math.floor(ev.clientY / CELL);
+      if (falling.length >= MAX_FALLING) falling.shift();
+      falling.push({
+        x: c * CELL + CELL / 2 + 0.5, y: r * CELL + CELL / 2 + 0.5,
+        vx: (Math.random() - 0.5) * 2.4, vy: -3 - Math.random() * 2,
+        rot: 0, vr: (Math.random() - 0.5) * 0.16,
+        color: colorFor(c)
+      });
+      holes.push({ c: c, r: r, t: performance.now() });
+      lit.delete(c + ',' + r);
+      kick();
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
+  })();
 })();
 </script>
 <!-- Cloudflare Web Analytics -->
