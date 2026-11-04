@@ -1,0 +1,47 @@
+{
+  "errors": [],
+  "messages": [],
+  "result": [
+    {
+      "meta": {
+        "changed_db": false,
+        "changes": 0,
+        "duration": 0.41,
+        "last_row_id": 0,
+        "rows_read": 22,
+        "rows_written": 0,
+        "served_by_colo": "TPE",
+        "served_by_primary": true,
+        "served_by_region": "APAC",
+        "size_after": 61440,
+        "timings": { "sql_duration_ms": 0.41 }
+      },
+      "results": [
+        { "id": 1, "conversation_id": "c-1101-a-7f3e9b21", "created_at": "2026-11-01T02:15:10.123Z", "role": "user", "content": "請問你們有做倉儲管理系統嗎？", "country": "TW", "city": "Taichung", "usage": null, "ip": "203.0.113.24" },
+        { "id": 2, "conversation_id": "c-1101-a-7f3e9b21", "created_at": "2026-11-01T02:15:10.123Z", "role": "assistant", "content": "您好，有的。我們可以依您的出入庫流程量身打造倉儲管理系統，包含進貨、出貨、盤點與庫存報表。\n請問您目前大概有幾個倉庫、每天的出入庫筆數大約多少呢？", "country": "TW", "city": "Taichung", "usage": "in=1520,cached=8800,write=0,out=96", "ip": "203.0.113.24" },
+        { "id": 3, "conversation_id": "c-1101-a-7f3e9b21", "created_at": "2026-11-01T02:17:40.456Z", "role": "user", "content": "兩個倉庫，大概多久可以上線？", "country": "TW", "city": "Taichung", "usage": null, "ip": "203.0.113.24" },
+        { "id": 4, "conversation_id": "c-1101-a-7f3e9b21", "created_at": "2026-11-01T02:17:40.456Z", "role": "assistant", "content": "一般規模約 2～3 個月可以上線，實際時程會在需求訪談後提供給您。", "country": "TW", "city": "Taichung", "usage": "in=1610,cached=8800,write=0,out=41", "ip": "203.0.113.24" },
+        { "id": 5, "conversation_id": "c-1101-b-11aa22bb", "created_at": "2026-11-01T06:30:05.000Z", "role": "user", "content": "你好", "country": "TW", "city": "Taipei", "usage": null, "ip": null },
+        { "id": 6, "conversation_id": "c-1101-b-11aa22bb", "created_at": "2026-11-01T06:30:05.000Z", "role": "error", "content": "[error] 服務暫時無法使用，請稍後再試。", "country": "TW", "city": "Taipei", "usage": null, "ip": null },
+        { "id": 7, "conversation_id": "c-1103-a-5c5c9d0e", "created_at": "2026-11-03T01:05:00.000Z", "role": "user", "content": "Do you build custom ERP systems for small factories?", "country": "US", "city": "San Jose", "usage": null, "ip": "198.51.100.7" },
+        { "id": 8, "conversation_id": "c-1103-a-5c5c9d0e", "created_at": "2026-11-03T01:05:00.000Z", "role": "assistant", "content": "Yes. We build operations systems tailored to each factory's workflow. May I ask what processes you would like to manage first?", "country": "US", "city": "San Jose", "usage": "in=1490,cached=8800,write=0,out=38", "ip": "198.51.100.7" },
+        { "id": 9, "conversation_id": "c-1103-b-90e1f4aa", "created_at": "2026-11-03T08:40:12.000Z", "role": "user", "content": "想詢問報價流程，需要準備什麼資料？", "country": "TW", "city": "Kaohsiung", "usage": null, "ip": "2001:db8:4006:812::200e" },
+        { "id": 10, "conversation_id": "c-1103-b-90e1f4aa", "created_at": "2026-11-03T08:40:12.000Z", "role": "assistant", "content": "報價流程大致如下：\n1. 先由您簡單說明目前的作業方式與想改善的地方\n2. 我們安排一次需求訪談（線上或到府）\n3. 一週內提供功能清單與報價\n\n建議先準備目前使用的表單或 Excel，訪談會更有效率。", "country": "TW", "city": "Kaohsiung", "usage": "in=1700,cached=8800,write=0,out=120", "ip": "2001:db8:4006:812::200e" },
+        { "id": 11, "conversation_id": "c-1103-c-3b7d0c19", "created_at": "2026-11-03T15:55:30.000Z", "role": "user", "content": "こんばんは、資料整理の自動化はできますか？", "country": "JP", "city": "Tokyo", "usage": null, "ip": "198.51.100.42" },
+        { "id": 12, "conversation_id": "c-1103-c-3b7d0c19", "created_at": "2026-11-03T15:55:30.000Z", "role": "assistant", "content": "您好，可以的。我們可以把重複的資料整理工作寫成自動化流程。請問資料目前是放在 Excel 還是其他系統呢？", "country": "JP", "city": "Tokyo", "usage": "in=1550,cached=8800,write=0,out=55", "ip": "198.51.100.42" },
+        { "id": 13, "conversation_id": "c-1103-c-3b7d0c19", "created_at": "2026-11-03T16:03:10.000Z", "role": "user", "content": "Excel です。毎日 3 つのファイルを合わせています。", "country": "JP", "city": "Tokyo", "usage": null, "ip": "198.51.100.42" },
+        { "id": 14, "conversation_id": "c-1103-c-3b7d0c19", "created_at": "2026-11-03T16:03:10.000Z", "role": "assistant", "content": "了解，每天合併三個 Excel 檔這類工作很適合自動化，通常可以從半小時縮短到一分鐘以內。", "country": "JP", "city": "Tokyo", "usage": "in=1640,cached=8800,write=0,out=48", "ip": "198.51.100.42" },
+        { "id": 15, "conversation_id": "c-1104-a-e2d4c6b8", "created_at": "2026-11-03T16:10:00.000Z", "role": "user", "content": "想再確認一下報價包含哪些項目？", "country": "TW", "city": "Taichung", "usage": null, "ip": "203.0.113.24" },
+        { "id": 16, "conversation_id": "c-1104-a-e2d4c6b8", "created_at": "2026-11-03T16:10:00.000Z", "role": "assistant", "content": "報價一般包含：\n・需求訪談與系統規劃\n・系統開發與測試\n・教育訓練\n・上線後一年的保固與維護\n\n伺服器與網域等費用會另外列出，讓您清楚每一項的金額。", "country": "TW", "city": "Taichung", "usage": "in=1720,cached=8800,write=0,out=110", "ip": "203.0.113.24" },
+        { "id": 17, "conversation_id": "c-1104-b-a9b8c7d6", "created_at": "2026-11-04T01:20:00.000Z", "role": "user", "content": "可以約時間電話討論嗎？", "country": "TW", "city": "Taichung", "usage": null, "ip": "203.0.113.24" },
+        { "id": 18, "conversation_id": "c-1104-b-a9b8c7d6", "created_at": "2026-11-04T01:20:00.000Z", "role": "assistant", "content": "當然可以。請留下您方便的時段與聯絡電話，我們會盡快與您聯繫。", "country": "TW", "city": "Taichung", "usage": "in=1580,cached=8800,write=0,out=52", "ip": "203.0.113.24" },
+        { "id": 19, "conversation_id": "c-1104-c-0f0e0d0c", "created_at": "2026-11-04T03:45:00.000Z", "role": "user", "content": "你們公司在哪裡？", "country": "TW", "city": "Taipei", "usage": null, "ip": "192.0.2.88" },
+        { "id": 20, "conversation_id": "c-1104-c-0f0e0d0c", "created_at": "2026-11-04T03:45:00.000Z", "role": "assistant", "content": "（測試資料）我們提供線上會議與到府服務，各地的客戶都可以合作。", "country": "TW", "city": "Taipei", "usage": "in=1500,cached=8800,write=0,out=30", "ip": "192.0.2.88" },
+        { "id": 21, "conversation_id": "c-1104-c-0f0e0d0c", "created_at": "2026-11-04T03:47:20.000Z", "role": "user", "content": "=1+1 這樣算是報價公式嗎？", "country": "TW", "city": "Taipei", "usage": null, "ip": "192.0.2.88" },
+        { "id": 22, "conversation_id": "c-1104-c-0f0e0d0c", "created_at": "2026-11-04T03:47:20.000Z", "role": "error", "content": "[error] 回覆逾時，請稍後再試。", "country": "TW", "city": "Taipei", "usage": null, "ip": "192.0.2.88" }
+      ],
+      "success": true
+    }
+  ],
+  "success": true
+}

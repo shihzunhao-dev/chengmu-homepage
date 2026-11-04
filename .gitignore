@@ -36,3 +36,8 @@ _backup_*.zip
 
 # CF Pages deploy staging (deploy.ps1 copies only site files here)
 dist/
+
+# ChengMu-Console (C# desktop tool) build output
+console/bin/
+console/obj/
+console/out/
