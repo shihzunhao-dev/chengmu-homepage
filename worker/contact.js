@@ -7,7 +7,7 @@
  *   RESEND_API_KEY   (Secret) — Resend API key（從 https://resend.com/api-keys 申請）
  *   RECIPIENT_EMAIL  (Plain)  — 收件人 email（預設 chengmu00082998@gmail.com）
  *   ALLOWED_ORIGINS  (Plain)  — CORS 允許來源，逗號分隔（建議填網站正式網域）
- *                                範例: https://shihzunhao-dev.github.io,https://chengmu-homepage.pages.dev
+ *                                範例: https://chengmu.com.tw,https://www.chengmu.com.tw,https://shihzunhao-dev.github.io,https://chengmu-homepage.pages.dev
  *
  * 部署：dash.cloudflare.com → Workers & Pages → Create Worker → 貼上本檔內容
  *      Worker name 建議: chengmu-contact

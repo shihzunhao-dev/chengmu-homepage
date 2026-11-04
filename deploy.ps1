@@ -118,6 +118,7 @@ if (-not $SkipPages) {
 $elapsed = [int]((Get-Date) - $startedAt).TotalSeconds
 Write-Host "`n────────────────────────────────────────────" -ForegroundColor DarkGray
 Write-Host "完成 (耗時 ${elapsed}s)" -ForegroundColor White
+Write-Url "正式網域   :" "https://chengmu.com.tw/"
 Write-Url "CF Pages   :" "https://chengmu-homepage.pages.dev/"
 Write-Url "GitHub Pages:" "https://shihzunhao-dev.github.io/chengmu-homepage/"
 Write-Host "────────────────────────────────────────────`n" -ForegroundColor DarkGray

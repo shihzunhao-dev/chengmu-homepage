@@ -77,7 +77,7 @@ chengmu00082998@gmail.com
 3. Variable name: `ALLOWED_ORIGINS`
 4. Value（依實際網域，逗號分隔）：
    ```
-   https://shihzunhao-dev.github.io,https://chengmu-homepage.pages.dev,http://localhost:3500
+   https://chengmu.com.tw,https://www.chengmu.com.tw,https://shihzunhao-dev.github.io,https://chengmu-homepage.pages.dev,http://localhost:3500
    ```
 5. 點 **Save and deploy**
 

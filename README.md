@@ -64,7 +64,10 @@ push 到 main 後 30-60 秒自動更新。
 
 ### Cloudflare Pages（已部署 ✅）
 
-🟢 **https://chengmu-homepage.pages.dev/**
+🟢 **https://chengmu.com.tw/**（正式網域，2026-11-04 綁定）
+
+- `www.chengmu.com.tw` 以 Cloudflare Redirect Rule「www to apex」301 轉到 `chengmu.com.tw`
+- Pages 預設網址 https://chengmu-homepage.pages.dev/ 仍可連，canonical 已統一指向正式網域
 
 `wrangler pages deploy` 後 ~10 秒生效。
 
@@ -87,7 +90,7 @@ wrangler pages deploy . --project-name=chengmu-homepage --branch=main --commit-d
 3. Worker Settings → Variables 加：
    - `RESEND_API_KEY` (Secret)
    - `RECIPIENT_EMAIL` (Plain) = chengmu00082998@gmail.com
-   - `ALLOWED_ORIGINS` (Plain) = `https://shihzunhao-dev.github.io,https://chengmu-homepage.pages.dev`
+   - `ALLOWED_ORIGINS` (Plain) = `https://chengmu.com.tw,https://www.chengmu.com.tw,https://shihzunhao-dev.github.io,https://chengmu-homepage.pages.dev`
 4. 完成後 `index.html` 內的 `CONTACT_WORKER_URL` 對齊 Worker 實際 URL
 
 → Worker 沒部署前，表單會顯示「網路錯誤」；用戶可改用 Email / LINE / 電話三張卡片直接聯絡（仍可正常用）。
