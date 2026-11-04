@@ -50,17 +50,17 @@ function validateMessages(messages) {
 }
 
 // 對話存檔：寫入 D1（binding DB）。沒有綁定資料庫時直接略過，不影響回覆。
-// 只存這一輪的新提問與回覆（前面的歷史已在先前的請求存過），不存 IP。
+// 只存這一輪的新提問與回覆（前面的歷史已在先前的請求存過）；連同客戶 IP，供中控台依客戶分組。
 async function saveTurn(env, rec) {
   if (!env.DB) return;
   const now = new Date().toISOString();
   const insert = env.DB.prepare(
-    "INSERT INTO chat_messages (conversation_id, created_at, role, content, country, city, usage) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    "INSERT INTO chat_messages (conversation_id, created_at, role, content, country, city, usage, ip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
   );
   try {
     await env.DB.batch([
-      insert.bind(rec.conversationId, now, "user", rec.question, rec.country, rec.city, null),
-      insert.bind(rec.conversationId, now, rec.role, rec.answer, rec.country, rec.city, rec.usage || null),
+      insert.bind(rec.conversationId, now, "user", rec.question, rec.country, rec.city, null, rec.ip),
+      insert.bind(rec.conversationId, now, rec.role, rec.answer, rec.country, rec.city, rec.usage || null, rec.ip),
     ]);
   } catch (err) {
     console.error("D1 save failed", err && err.message);
@@ -99,6 +99,7 @@ export default {
       question: messages[messages.length - 1].content.trim(),
       country: cf.country || null,
       city: cf.city || null,
+      ip: ip === "unknown" ? null : ip,
     };
     // 回覆送出後才在背景寫入，不拖慢客戶等待時間
     const log = (role, answer, usage) => ctx.waitUntil(saveTurn(env, { ...turn, role, answer, usage }));

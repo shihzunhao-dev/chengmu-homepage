@@ -6,9 +6,11 @@ CREATE TABLE IF NOT EXISTS chat_messages (
   created_at      TEXT    NOT NULL,             -- UTC ISO 8601
   role            TEXT    NOT NULL,             -- user / assistant / error
   content         TEXT    NOT NULL,
-  country         TEXT,                         -- Cloudflare 判斷的國家代碼（不存 IP）
+  country         TEXT,                         -- Cloudflare 判斷的國家代碼
   city            TEXT,
-  usage           TEXT                          -- assistant 那筆的 token 用量
+  usage           TEXT,                         -- assistant 那筆的 token 用量
+  ip              TEXT                          -- 客戶連線 IP（CF-Connecting-IP），中控台依此分組
 );
 CREATE INDEX IF NOT EXISTS idx_chat_conv ON chat_messages (conversation_id, id);
 CREATE INDEX IF NOT EXISTS idx_chat_time ON chat_messages (created_at);
+CREATE INDEX IF NOT EXISTS idx_chat_ip ON chat_messages (ip, id);

@@ -23,4 +23,10 @@ namespace_id = "2001"
   limit = 10
   period = 60
 
+# 對話紀錄（D1）：表結構見 schema.sql，匯出用 export-chats.ps1 或 ChengMu-Console.exe
+[[d1_databases]]
+binding = "DB"
+database_name = "chengmu-chat-log"
+database_id = "33bab8c1-cd58-48a4-94c6-4754e13fe36f"
+
 # 機密：ANTHROPIC_API_KEY 用 `wrangler secret put ANTHROPIC_API_KEY` 設定，不寫在這裡
