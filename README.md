@@ -56,6 +56,25 @@ python -m http.server 3500
 
 完成後會印兩個 production URL 確認。
 
+CF Pages 只上傳 `deploy.ps1` 裡 `$SiteFiles` 白名單的檔案（先複製到 `dist/` 再部署），
+新增網站檔案時要把它加進白名單，否則不會上線。
+
+### 🤖 AI 服務助理（`worker-chat/`，另一個部署）
+
+首頁右下角「問問澄沐」呼叫 `https://chengmu.com.tw/api/chat`，由 Cloudflare Worker `chengmu-chat` 處理，
+模型是 Claude Haiku 5.5。**`deploy.ps1` 不會更新它**，改了 `worker-chat/` 底下的檔案要另外部署：
+
+```powershell
+cd worker-chat
+npm install                              # 第一次或換電腦時
+wrangler secret put ANTHROPIC_API_KEY    # 第一次或換金鑰時
+wrangler deploy
+```
+
+- 知識來源：`worker-chat/knowledge.md`（只寫服務類型，不寫客戶、案件、人名）；回答規則在 `src/index.js` 的 `RULES`
+- 花費上限：Anthropic Console 工作區的每月 50 USD 上限（硬上限）；Worker 另有每 IP 每分鐘 10 次的軟性限流
+- 只在 `chengmu.com.tw` 可用；GitHub Pages 與 pages.dev 沒有 `/api`，對話框會改顯示聯絡方式
+
 ### GitHub Pages（已部署 ✅）
 
 🟢 **https://shihzunhao-dev.github.io/chengmu-homepage/**

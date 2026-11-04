@@ -33,3 +33,6 @@ _backup_*.zip
 
 # Wrangler local cache (per-machine state, not for git)
 .wrangler/
+
+# CF Pages deploy staging (deploy.ps1 copies only site files here)
+dist/

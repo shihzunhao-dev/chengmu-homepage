@@ -5,8 +5,12 @@
 .DESCRIPTION
     1. 檢查 git 狀態
     2. 若有變更：stage / commit / push 到 GitHub（→ 自動觸發 GitHub Pages 重建）
-    3. 用 wrangler 推到 Cloudflare Pages（即時生效）
-    4. 顯示兩個 production URL
+    3. 只把網站需要的檔案（$SiteFiles 白名單）複製到 dist/，再用 wrangler 推到 Cloudflare Pages
+       （README、deploy.ps1、worker-chat/ 等不會被公開）
+    4. 顯示 production URL
+
+    注意：AI 服務助理的 Worker（worker-chat/）是另一個部署，本腳本不會更新它。
+          改了 worker-chat/ 底下的檔案（含 knowledge.md），要在 worker-chat/ 執行 wrangler deploy。
 
 .EXAMPLE
     .\deploy.ps1 "fix: 修正聯絡表單樣式"
@@ -91,7 +95,27 @@ if (-not $SkipGit) {
 if (-not $SkipPages) {
     Write-Step "Step 2/2  Wrangler deploy → Cloudflare Pages"
 
-    $wranglerOutput = wrangler pages deploy . `
+    # 網站白名單：只有這些會上線。新增網站檔案時要加進來。
+    $SiteFiles = @(
+        'index.html',
+        'robots.txt',
+        'sitemap.xml',
+        'assets\logo.svg',
+        'assets\logo.png',
+        'assets\fonts\SarasaTermTC-Latin-Regular.woff2',
+        'assets\fonts\SarasaTermTC-Latin-Bold.woff2'
+    )
+    $dist = Join-Path $PSScriptRoot 'dist'
+    if (Test-Path $dist) { Remove-Item $dist -Recurse -Force }
+    foreach ($f in $SiteFiles) {
+        if (-not (Test-Path $f)) { Write-Err "找不到網站檔案：$f"; exit 1 }
+        $target = Join-Path $dist $f
+        New-Item -ItemType Directory -Force (Split-Path $target) | Out-Null
+        Copy-Item $f $target
+    }
+    Write-Ok "已複製 $($SiteFiles.Count) 個網站檔案到 dist/"
+
+    $wranglerOutput = wrangler pages deploy dist `
         --project-name=chengmu-homepage `
         --branch=main `
         --commit-dirty=true 2>&1

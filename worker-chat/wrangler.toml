@@ -1,0 +1,26 @@
+name = "chengmu-chat"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+# 掛在官網同網域底下，前端用相對路徑 /api/chat 呼叫，不用處理 CORS
+[[routes]]
+pattern = "chengmu.com.tw/api/*"
+zone_name = "chengmu.com.tw"
+
+# knowledge.md 以純文字打包進 Worker（import KNOWLEDGE from "../knowledge.md"）
+[[rules]]
+type = "Text"
+globs = ["**/*.md"]
+fallthrough = true
+
+# 軟性限流：每個 IP 每 60 秒最多 10 次；各機房分開計算，屬近似值。
+# 真正的花費上限是 Anthropic Console 工作區的每月 50 USD 上限。
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "2001"
+
+  [ratelimits.simple]
+  limit = 10
+  period = 60
+
+# 機密：ANTHROPIC_API_KEY 用 `wrangler secret put ANTHROPIC_API_KEY` 設定，不寫在這裡

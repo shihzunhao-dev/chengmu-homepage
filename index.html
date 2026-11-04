@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>澄沐實業有限公司 — 為客戶提供深度客製軟體與資訊情報工具</title>
-<meta name="description" content="澄沐實業有限公司：工程師主導的軟體事務所，為核能、電力、光電產業打造客製系統；自有產品 PCC Tender Watch 政府採購監控、家庭存摺、預算系統皆為買斷制。">
+<title>澄沐實業有限公司 — 客製化程式系統開發・程式系統維護・資訊專業服務</title>
+<meta name="description" content="澄沐實業有限公司：工程師主導的軟體事務所，提供客製化程式系統開發、程式系統維護與資訊專業服務。需求訪談、開發、部署到維護，由同一組工程師負責到底。">
 <meta property="og:title" content="澄沐實業有限公司 / CHENGMU INDUSTRIAL">
-<meta property="og:description" content="為客戶提供深度客製軟體與資訊情報工具。">
+<meta property="og:description" content="客製化程式系統開發・程式系統維護・資訊專業服務。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://chengmu.com.tw/">
 <meta property="og:image" content="https://chengmu.com.tw/assets/logo.png">
@@ -14,19 +14,17 @@
 <meta property="og:site_name" content="澄沐實業有限公司">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="澄沐實業有限公司 / CHENGMU INDUSTRIAL">
-<meta name="twitter:description" content="為客戶提供深度客製軟體與資訊情報工具。">
+<meta name="twitter:description" content="客製化程式系統開發・程式系統維護・資訊專業服務。">
 <meta name="twitter:image" content="https://chengmu.com.tw/assets/logo.png">
 <link rel="canonical" href="https://chengmu.com.tw/">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="icon" type="image/png" href="assets/logo.png">
-
-<!-- ── Mobile / PWA meta ──────────────────────────────── -->
-<meta name="theme-color" content="#f4f2ec">
 <link rel="apple-touch-icon" href="assets/logo.png">
-<meta name="apple-mobile-web-app-title" content="澄沐">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-
-<!-- ── Schema.org JSON-LD（SEO / GEO / AEO 結構化資料） ────────── -->
+<meta name="theme-color" content="#f4f2ec">
+<link rel="preload" href="assets/fonts/SarasaTermTC-Latin-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -38,43 +36,18 @@
       "alternateName": "CHENGMU INDUSTRIAL CO., LTD.",
       "url": "https://chengmu.com.tw/",
       "logo": "https://chengmu.com.tw/assets/logo.png",
-      "image": "https://chengmu.com.tw/assets/logo.png",
-      "description": "工程師主導的軟體事務所，為核能、電力、光電產業打造深度客製系統，並開發 PCC Tender Watch、My Health Bank、Budget System 等買斷制自有產品。",
+      "description": "工程師主導的軟體事務所，提供客製化程式系統開發、程式系統維護與資訊專業服務。",
       "foundingDate": "2025",
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "TW",
-        "addressRegion": "Taiwan"
-      },
-      "contactPoint": [
-        {
-          "@type": "ContactPoint",
-          "contactType": "customer support",
-          "telephone": "+886-952-159-801",
-          "email": "chengmu00082998@gmail.com",
-          "availableLanguage": ["zh-Hant", "en"],
-          "areaServed": "TW"
-        }
-      ],
       "email": "chengmu00082998@gmail.com",
       "telephone": "+886-952-159-801",
-      "sameAs": [
-        "https://line.me/R/ti/p/@378vuckv"
-      ],
-      "knowsAbout": [
-        "ASP.NET Web Forms",
-        "Flask",
-        "FastAPI",
-        "SQL Server",
-        "IIS 部署",
-        "政府電子採購網爬蟲",
-        "PWA 離線應用",
-        "LLM 整合",
-        "預算管理系統",
-        "核能產業資訊系統",
-        "電力產業資訊系統",
-        "光電產業資訊系統"
-      ]
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "telephone": "+886-952-159-801",
+        "email": "chengmu00082998@gmail.com",
+        "areaServed": "TW",
+        "availableLanguage": ["zh-Hant"]
+      }
     },
     {
       "@type": "WebSite",
@@ -83,373 +56,247 @@
       "name": "澄沐實業有限公司",
       "inLanguage": "zh-Hant",
       "publisher": { "@id": "https://chengmu.com.tw/#organization" }
-    },
-    {
-      "@type": "SoftwareApplication",
-      "name": "PCC Tender Watch — 政府採購標案監控",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Windows, PWA",
-      "url": "https://chengmu.com.tw/products/pcc-tender-watch",
-      "image": "https://chengmu.com.tw/assets/logo.png",
-      "softwareVersion": "1.4",
-      "description": "自動抓取政府電子採購網的公開徵求 / 公開招標公告，依關鍵字過濾推播。HMAC-SHA256 機器指紋授權、一次買斷、本機 PWA 離線可用。",
-      "featureList": [
-        "關鍵字命中即時推播",
-        "HMAC-SHA256 線上授權，序號綁機台",
-        "離線可用，純本機 IIS 反代 PWA",
-        "14 天滿意保證、可遠端鎖序號退費"
-      ],
-      "publisher": { "@id": "https://chengmu.com.tw/#organization" },
-      "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "TWD",
-        "lowPrice": "18000",
-        "highPrice": "28000",
-        "availability": "https://schema.org/InStock",
-        "url": "https://chengmu.com.tw/products/pcc-tender-watch"
-      }
-    },
-    {
-      "@type": "SoftwareApplication",
-      "name": "My Health Bank — 家庭存摺",
-      "applicationCategory": "HealthApplication",
-      "operatingSystem": "Windows, PWA",
-      "url": "https://chengmu.com.tw/products/my-health-bank",
-      "image": "https://chengmu.com.tw/assets/logo.png",
-      "description": "把 NHI 健保署資料封裝成家庭使用介面：用藥紀錄、就診摘要，背後串接 OpenAI / Anthropic / Gemini / Ollama / Groq 五家 LLM 自動翻譯成易懂中文。",
-      "featureList": [
-        "5 家 LLM 抽象層，可即時切換最便宜可用",
-        "Groq gpt-oss-120b 實戰：111 筆病歷 11 分鐘",
-        "SHA-256 翻譯快取，重複病歷免費複用",
-        "Flask + PWA + mkcert HTTPS 純本機運作"
-      ],
-      "publisher": { "@id": "https://chengmu.com.tw/#organization" }
-    },
-    {
-      "@type": "SoftwareApplication",
-      "name": "Budget System — 客製化預算管理系統",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Windows Server, Linux",
-      "url": "https://chengmu.com.tw/products/budget-system",
-      "image": "https://chengmu.com.tw/assets/logo.png",
-      "description": "以實戰驗證的預算管理架構為基礎，依組織單位、預算類別、簽核流程、報表需求逐項客製。React + Node.js + MySQL，一次部署到內網主機，永久使用。",
-      "featureList": [
-        "多層組織單位 + 4 種角色權限隔離",
-        "採購案 8 階段全程追蹤 + Email 排程通知",
-        "執行率儀表板 + 版本快照還原 + Excel 匯出",
-        "一鍵安裝包部署、無雲端依賴"
-      ],
-      "publisher": { "@id": "https://chengmu.com.tw/#organization" }
-    },
-    {
-      "@type": "FAQPage",
-      "@id": "https://chengmu.com.tw/#faq",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "一個客製專案大概要多久？",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "看範圍。一個內部報表工具大概 2 到 3 週、一套完整的工單簽核系統 2 到 4 個月、舊系統翻新加新功能 3 到 6 個月。澄沐實業會在訪談後給明確的時程與里程碑，不灌水也不畫大餅。"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "可以只買 PCC Tender Watch，不接客製案嗎？",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "可以。自有產品（PCC Tender Watch、家庭存摺、預算系統）都是獨立販售，不綁客製專案。買了之後不滿意，14 天內可遠端鎖序號退費，沒有長期合約。"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "為什麼產品堅持買斷不做訂閱？",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "一個工具值不值得做的標準，是它在十年後仍然能用。訂閱會讓使用者被軟體公司綁架，買斷則把控制權還給使用者。澄沐自有產品都設計成可純本機運作，不靠雲端伺服器續命，伺服器關掉了軟體照樣能跑。"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "支援哪些產業？非核能電力光電的中小企業可以接嗎？",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "可以。澄沐最熟核能、電力、光電產業的內部流程（工單、簽核、報表、LDAP 整合、廠房資料庫），但客製專案本身不限產業，一般中小企業的 ERP 整合、預算管理、報表自動化、舊網站翻新都接過。"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "我們公司有套很舊的 ASP.NET Web Forms 系統，可以接手維護或現代化嗎？",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "可以，這是澄沐的主力之一。從 IIS 部署、SQL Server 舊資料庫遷移、報表 PDF/Excel 輸出，到逐步把前端抽換成 React、後端換成 FastAPI 的漸進式現代化都能做。沒人想接的、文件不全的、規格還沒定的，反而是我們擅長的案型。"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "自有產品要連雲端嗎？資料會被傳出去嗎？",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "不需要連雲端、資料不會傳出去。PCC Tender Watch、家庭存摺、預算系統都設計成可純本機或內網運作，病歷、預算、標案資料都留在使用者的電腦或公司主機，不經過第三方伺服器。授權驗證會做一次線上 HMAC 握手，握手完之後離線也能用。"
-          }
-        }
-      ]
     }
   ]
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- 非阻塞載入 Google Fonts -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@500;700;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@500;700;900&display=swap"></noscript>
-<link rel="stylesheet" href="assets/site.css">
-<!-- 漸進增強特效（工程製圖式；no-JS 可讀、尊重 reduced-motion） -->
-<script src="assets/fx.js"></script>
+<style>
+  /* 更紗英數：從 Sarasa Term TC 裁出英數與常用符號，只用在這些字元；中文交給思源黑體（Noto Sans TC） */
+  @font-face { font-family: "Sarasa Latin"; src: url("assets/fonts/SarasaTermTC-Latin-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2013-2014, U+2018-201D, U+2022, U+2026, U+20AC, U+2122; }
+  @font-face { font-family: "Sarasa Latin"; src: url("assets/fonts/SarasaTermTC-Latin-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2013-2014, U+2018-201D, U+2022, U+2026, U+20AC, U+2122; }
+
+  :root {
+    --bg: #f4f2ec; --ink: #1b1d1f; --muted: #555a5f; --line: #dcdcd6;
+    --grid: rgba(43,76,126,0.055); --cad: #2b4c7e;
+    --blue: #0f70aa; --teal: #1b7291;
+    --font: "Sarasa Latin", "Noto Sans TC", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--ink); font: 400 18px/1.8 var(--font); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+
+  /* 工程方格紙底 */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+  /* CAD 十字游標（僅滑鼠裝置，由 JS 建立） */
+  .cad-cursor { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
+  .cad-cursor .cad-x, .cad-cursor .cad-y { position: absolute; background: var(--cad); opacity: 0; transition: opacity .22s ease; will-change: transform; }
+  .cad-cursor.on .cad-x, .cad-cursor.on .cad-y { opacity: .16; }
+  .cad-cursor .cad-x { top: 0; bottom: 0; width: 1px; left: 0; }
+  .cad-cursor .cad-y { left: 0; right: 0; height: 1px; top: 0; }
+
+  .card { min-height: 100vh; max-width: 1080px; margin: 0 auto; padding: 48px 40px 120px; display: grid; grid-template-rows: auto 1fr auto; }
+  .top { display: flex; justify-content: space-between; font-size: 15px; font-weight: 500; color: var(--muted); letter-spacing: .1em; }
+
+  .center { display: grid; grid-template-columns: auto 1fr; gap: 56px; align-items: center; padding: 56px 0; }
+  .logo { width: 210px; height: auto; display: block; }
+  h1 { font: 700 clamp(42px, 6.6vw, 80px)/1.2 var(--font); letter-spacing: .02em; }
+  .tag { font-size: clamp(19px, 2.2vw, 24px); font-weight: 500; line-height: 1.7; margin-top: 16px; }
+  .tag i { font-style: normal; color: var(--teal); margin: 0 .5em; }
+  .desc { margin-top: 18px; color: var(--muted); max-width: 32em; }
+
+  .bottom { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); }
+  .bottom div { padding: 20px 20px 0 0; font-size: 16px; }
+  .bottom .k { display: block; font-size: 13px; font-weight: 700; letter-spacing: .14em; color: var(--muted); }
+  .bottom a { text-decoration: none; }
+  .bottom a:hover { color: var(--blue); }
+  .copy { grid-column: 1 / -1; padding-top: 28px !important; font-size: 14px !important; color: var(--muted); }
+
+  /* 服務諮詢對話框 */
+  .fab { position: fixed; right: 28px; bottom: 28px; z-index: 50; background: var(--ink); color: #fff; border: 0; font: 700 17px var(--font); padding: 16px 24px; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .fab::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #b9ca3b, #0f70aa); }
+  .panel { position: fixed; right: 28px; bottom: 96px; z-index: 50; width: 400px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid var(--ink); display: flex; flex-direction: column; height: min(620px, calc(100vh - 140px)); }
+  .panel[hidden] { display: none; }
+  .p-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .p-head .t { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 700; }
+  .p-head img { width: 34px; height: auto; }
+  .p-head button { border: 0; background: none; font-size: 24px; line-height: 1; cursor: pointer; color: var(--muted); padding: 4px 8px; }
+  .p-log { flex: 1; padding: 16px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+  .bubble { padding: 12px 15px; font-size: 16.5px; line-height: 1.7; max-width: 90%; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .bubble.bot { background: #eef3f5; align-self: flex-start; }
+  .bubble.user { background: var(--ink); color: #fff; align-self: flex-end; }
+  .bubble.err { background: #fbeeee; color: #7a2525; align-self: flex-start; }
+  .bubble.wait { color: var(--muted); }
+  .p-quick[hidden] { display: none; }
+  .p-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 12px; }
+  .p-quick button { border: 1px solid var(--line); background: #fff; font: 500 15px var(--font); padding: 8px 12px; cursor: pointer; color: var(--ink); }
+  .p-quick button:hover { border-color: var(--ink); }
+  .p-input { display: flex; border-top: 1px solid var(--line); }
+  .p-input input { flex: 1; min-width: 0; border: 0; padding: 15px 16px; font: 400 17px var(--font); outline: none; }
+  .p-input button { border: 0; background: var(--blue); color: #fff; font: 700 16px var(--font); padding: 0 18px; cursor: pointer; }
+  .p-input button:disabled, .p-quick button:disabled { opacity: .5; cursor: default; }
+  .p-note { font-size: 14px; color: var(--muted); padding: 8px 16px 12px; }
+
+  @media (max-width: 720px) {
+    .card { padding: 28px 22px 110px; }
+    .center { grid-template-columns: 1fr; gap: 28px; padding: 36px 0; }
+    .logo { width: 150px; }
+    .bottom { grid-template-columns: 1fr; }
+    .bottom div { padding: 14px 0 0; }
+    .fab { right: 16px; bottom: 16px; }
+    .panel { right: 16px; left: 16px; width: auto; bottom: 84px; height: calc(100vh - 120px); }
+    .cad-cursor { display: none; }
+  }
+</style>
 </head>
-<body id="top">
+<body>
+<div class="card">
+  <div class="top"><span>CHENGMU INDUSTRIAL CO., LTD.</span><span>台灣</span></div>
 
-<nav>
-  <div class="nav-in">
-    <a href="#top" class="brand">
-      <span class="zh">澄沐實業</span>
-      <span class="en">CHENGMU INDUSTRIAL</span>
-    </a>
-    <div class="nav-links">
-      <a href="#services"><i>01</i> 服務</a>
-      <a href="#products"><i>02</i> 產品</a>
-      <a href="#about"><i>03</i> 關於</a>
-      <a href="#faq"><i>04</i> 常見問題</a>
-      <a href="#contact"><i>05</i> 聯絡</a>
+  <main class="center">
+    <img class="logo" src="assets/logo.svg" alt="澄沐實業 logo" width="466" height="277">
+    <div>
+      <h1>澄沐實業</h1>
+      <p class="tag">客製化程式系統開發<i>／</i>程式系統維護<i>／</i>資訊專業服務</p>
+      <p class="desc">工程師主導的軟體事務所。需求訪談、開發、部署到維護，都由同一組人負責到底。</p>
     </div>
-    <span class="nav-rev">REV 1.0 / 2026</span>
-  </div>
-</nav>
+  </main>
 
-<header class="sheet hero">
-  <div class="est" style="margin-bottom:28px;">DOC. 00 — OVERVIEW　·　EST. 2025 — 台灣 / TAIWAN</div>
-  <h1>以工程師的手，<br>做<span class="blue">交付得了</span>的軟體。</h1>
-  <p class="hero-deck">
-    澄沐實業是一間工程師主導的軟體事務所。替核能、電力、光電產業寫內部系統，
-    也替每個人寫買得斷、用得久的工具。從訪談、開發到部署，由內部團隊完成。
-  </p>
-  <div class="hero-meta">
-    <div class="dim"><span>核能 · 電力 · 光電 · 中小企業</span></div>
-    <div class="est">
-      <b>3</b> 自有產品線　／　<b>0</b> 外包　／　<b>0</b> 訂閱綁約<br>
-      交付即附原始碼　·　不藏關鍵程式
-    </div>
-  </div>
-</header>
+  <footer class="bottom">
+    <div><span class="k">EMAIL</span><a href="mailto:chengmu00082998@gmail.com">chengmu00082998@gmail.com</a></div>
+    <div><span class="k">LINE</span><a href="https://line.me/R/ti/p/@378vuckv" target="_blank" rel="noopener">@378vuckv</a></div>
+    <div><span class="k">電話</span><a href="tel:0952159801">0952-159-801</a></div>
+    <div class="copy">© 2026 澄沐實業有限公司</div>
+  </footer>
+</div>
 
-<!-- 01 SERVICES -->
-<section id="services">
-  <div class="sheet">
-    <div class="row">
-      <span class="datum tl"></span><span class="datum tr"></span>
-      <div class="rail"><div class="no">01</div><div class="tag">SERVICES</div></div>
-      <div>
-        <div class="sec-head"><h2>服務</h2><span class="en">SCOPE OF WORK</span><span class="rule"></span></div>
-        <div class="specs">
-          <div class="spec">
-            <span class="sn">01</span>
-            <div class="body">
-              <h3>產業系統客製</h3>
-              <p>針對核能、電力、光電產業的內部流程設計：工單、簽核審查、報表產出、LDAP 整合，整套交付。</p>
-            </div>
-            <div class="stack">ASP.NET<i> · </i>SQL&nbsp;Server<br>Flask<i> · </i>FastAPI</div>
-          </div>
-          <div class="spec">
-            <span class="sn">02</span>
-            <div class="body">
-              <h3>自有工具產品</h3>
-              <p>把單一痛點打磨到極致的小工具。一次買斷、終身使用、無訂閱、可離線。</p>
-            </div>
-            <div class="stack">PWA<i> · </i>機器指紋授權<br>Cloudflare&nbsp;Worker</div>
-          </div>
-          <div class="spec">
-            <span class="sn">03</span>
-            <div class="body">
-              <h3>系統整合與升級</h3>
-              <p>既有 Web Forms 系統現代化、IIS 部署、舊資料庫遷移、報表 PDF / Excel 輸出。</p>
-            </div>
-            <div class="stack">Web&nbsp;Forms<i> · </i>IIS<br>OpenXML<i> · </i>RDLC</div>
-          </div>
-        </div>
-      </div>
-    </div>
+<section class="panel" id="panel" role="dialog" aria-label="服務諮詢" hidden>
+  <div class="p-head"><span class="t"><img src="assets/logo.svg" alt="">服務諮詢</span><button type="button" id="closeBtn" aria-label="關閉">×</button></div>
+  <div class="p-log" id="log" aria-live="polite">
+    <div class="bubble bot">您好，我是澄沐的服務助理，可以說明我們提供的三項服務：客製化程式系統開發、程式系統維護、資訊專業服務。請問有什麼想了解的？</div>
   </div>
+  <div class="p-quick" id="quick">
+    <button type="button">開發一套系統的流程是什麼？</button>
+    <button type="button">舊系統可以接手維護嗎？</button>
+    <button type="button">資訊專業服務包含哪些？</button>
+  </div>
+  <form class="p-input" id="form">
+    <input id="q" type="text" maxlength="500" autocomplete="off" placeholder="輸入問題…" aria-label="輸入問題">
+    <button type="submit" id="sendBtn">送出</button>
+  </form>
+  <div class="p-note">AI 回覆；報價與時程以工程師評估為準。</div>
 </section>
+<button class="fab" type="button" id="fab" aria-controls="panel" aria-expanded="false">問問澄沐</button>
 
-<!-- 02 PRODUCTS -->
-<section id="products">
-  <div class="sheet">
-    <div class="row">
-      <span class="datum tl"></span><span class="datum tr"></span>
-      <div class="rail"><div class="no">02</div><div class="tag">PRODUCTS</div></div>
-      <div>
-        <div class="sec-head"><h2>產品</h2><span class="en">PRODUCT SCHEDULE</span><span class="rule"></span></div>
-        <div class="ds-wrap">
-          <table class="ds">
-            <caption>自有產品一覽　·　全系列買斷授權，可本機 / 內網離線運作</caption>
-            <thead>
-              <tr>
-                <th>料號 / CODE</th><th>產品 / ITEM</th><th>用途 / FUNCTION</th>
-                <th>版本 / REV</th><th>授權 / LIC.</th><th>平台 / PLATFORM</th><th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="code" data-label="料號">CM-PCC-01</td>
-                <td class="name" data-label="產品">政府採購標案監控</td>
-                <td class="use" data-label="用途">每日抓取政府電子採購網全量公告，依關鍵字過濾、內網共用。</td>
-                <td class="m" data-label="版本">v1.4</td><td class="m" data-label="授權">買斷</td><td class="m" data-label="平台">Windows · PWA</td>
-                <td data-label="文件"><a class="more" href="products/pcc-tender-watch.html">規格 →</a></td>
-              </tr>
-              <tr>
-                <td class="code" data-label="料號">CM-MHB-02</td>
-                <td class="name" data-label="產品">家庭存摺</td>
-                <td class="use" data-label="用途">健保病歷封裝為家庭介面，串接 5 家 LLM 翻成易懂中文，純本機。</td>
-                <td class="m" data-label="版本">—</td><td class="m" data-label="授權">買斷</td><td class="m" data-label="平台">Windows · PWA</td>
-                <td data-label="文件"><a class="more" href="products/my-health-bank.html">規格 →</a></td>
-              </tr>
-              <tr>
-                <td class="code" data-label="料號">CM-BUD-03</td>
-                <td class="name" data-label="產品">客製化預算管理系統</td>
-                <td class="use" data-label="用途">依組織單位、預算類別、簽核流程逐項客製，採購追蹤與報表，內網部署。</td>
-                <td class="m" data-label="版本">—</td><td class="m" data-label="授權">買斷</td><td class="m" data-label="平台">Win&nbsp;Server · Linux</td>
-                <td data-label="文件"><a class="more" href="products/budget-system.html">規格 →</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<script>
+(function () {
+  'use strict';
+  var CONTACT = 'Email：chengmu00082998@gmail.com／LINE：@378vuckv／電話：0952-159-801';
+  var MAX_HISTORY = 10;   // 與 Worker 的上限一致
+  var panel = document.getElementById('panel');
+  var fab = document.getElementById('fab');
+  var log = document.getElementById('log');
+  var form = document.getElementById('form');
+  var input = document.getElementById('q');
+  var sendBtn = document.getElementById('sendBtn');
+  var quick = document.getElementById('quick');
+  var history = [];       // [{ role: 'user'|'assistant', content }]
+  var busy = false;
 
-<!-- 03 ABOUT -->
-<section id="about">
-  <div class="sheet">
-    <div class="row">
-      <span class="datum tl"></span><span class="datum tr"></span>
-      <div class="rail"><div class="no">03</div><div class="tag">ABOUT</div></div>
-      <div>
-        <div class="sec-head"><h2>關於澄沐</h2><span class="en">GENERAL NOTES</span><span class="rule"></span></div>
-        <div class="about-grid">
-          <div class="about-body">
-            <p><span class="lead-mark">澄</span>沐實業是一間登記在台灣的軟體事務所，工程師主導、專案精實。沒有「敏捷團隊」、沒有「Scrum Master」，也不打算融資擴張。我們只寫交付後還能放心用很多年的程式碼。</p>
-            <p>服務客戶橫跨核能、電力、光電與一般中小企業。從 ASP.NET Web Forms 老站翻新，到 FastAPI + React 新站從零開始，再到自有產品上架販售。從訪談、開發到部署都由內部完成，沒有外包、沒有層層轉手。</p>
-            <p>如果你的專案沒人想接、文件不全、規格還沒定，但你已經知道「現在這套不能繼續用」，我們大概聊得起來。</p>
-          </div>
-          <div class="notes">
-            <div class="note"><span class="k">EST. 成立</span><span class="v">2025 · 台灣</span></div>
-            <div class="note"><span class="k">TEAM 團隊</span><span class="v">工程師主導</span></div>
-            <div class="note"><span class="k">SECTOR 產業</span><span class="v">核 · 電 · 光電</span></div>
-            <div class="note"><span class="k">OUTSRC. 外包</span><span class="v b">0</span></div>
-            <div class="note"><span class="k">SUBSCR. 訂閱</span><span class="v b">0</span></div>
-            <div class="note"><span class="k">SOURCE 原始碼</span><span class="v">交付即附</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  function setOpen(open) {
+    panel.hidden = !open;
+    fab.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) input.focus();
+  }
+  fab.addEventListener('click', function () { setOpen(panel.hidden); });
+  document.getElementById('closeBtn').addEventListener('click', function () { setOpen(false); });
 
-<!-- 04 FAQ -->
-<section id="faq">
-  <div class="sheet">
-    <div class="row">
-      <span class="datum tl"></span><span class="datum tr"></span>
-      <div class="rail"><div class="no">04</div><div class="tag">FAQ</div></div>
-      <div>
-        <div class="sec-head"><h2>常見問題</h2><span class="en">FREQUENTLY ASKED</span><span class="rule"></span></div>
-        <div class="faq">
-          <div class="faq-item">
-            <span class="fq-n">Q.01</span>
-            <div>
-              <div class="fq-q">一個客製專案大概要多久？</div>
-              <div class="fq-a">看範圍。一個內部報表工具大概 2 到 3 週、一套完整的工單簽核系統 2 到 4 個月、舊系統翻新加新功能 3 到 6 個月。我們會在訪談後給明確的時程與里程碑，不灌水也不畫大餅。</div>
-            </div>
-          </div>
-          <div class="faq-item">
-            <span class="fq-n">Q.02</span>
-            <div>
-              <div class="fq-q">可以只買 PCC Tender Watch，不接客製案嗎？</div>
-              <div class="fq-a">可以。自有產品（PCC Tender Watch、家庭存摺、預算系統）都是獨立販售，不綁客製專案。買了之後不滿意，14 天內可遠端鎖序號退費，沒有長期合約。</div>
-            </div>
-          </div>
-          <div class="faq-item">
-            <span class="fq-n">Q.03</span>
-            <div>
-              <div class="fq-q">為什麼產品堅持買斷不做訂閱？</div>
-              <div class="fq-a">一個工具值不值得做的標準，是它在你忘了我們公司還在不在的十年後，仍然能用。訂閱會讓你被軟體公司綁架，買斷則把控制權還給你。我們的產品都設計成可純本機運作，伺服器關掉了照樣能跑。</div>
-            </div>
-          </div>
-          <div class="faq-item">
-            <span class="fq-n">Q.04</span>
-            <div>
-              <div class="fq-q">支援哪些產業？非核能電力光電的中小企業可以接嗎？</div>
-              <div class="fq-a">可以。我們最熟核能、電力、光電產業的內部流程（工單、簽核、報表、LDAP 整合、廠房資料庫），但客製專案本身不限產業，一般中小企業的 ERP 整合、預算管理、報表自動化、舊網站翻新都接過。</div>
-            </div>
-          </div>
-          <div class="faq-item">
-            <span class="fq-n">Q.05</span>
-            <div>
-              <div class="fq-q">有套很舊的 ASP.NET Web Forms 系統，可以接手維護或現代化嗎？</div>
-              <div class="fq-a">可以，這是我們的主力之一。從 IIS 部署、SQL Server 舊資料庫遷移、報表 PDF/Excel 輸出，到逐步把前端抽換成 React、後端換成 FastAPI 的漸進式現代化都能做。沒人想接的、文件不全的、規格還沒定的，反而是我們擅長的案型。</div>
-            </div>
-          </div>
-          <div class="faq-item">
-            <span class="fq-n">Q.06</span>
-            <div>
-              <div class="fq-q">自有產品要連雲端嗎？資料會被傳出去嗎？</div>
-              <div class="fq-a">不需要連雲端、資料不會傳出去。三個自有產品都設計成可純本機或內網運作，病歷、預算、標案資料都留在你的電腦或公司主機，不經過第三方伺服器。授權驗證會做一次線上 HMAC 握手，握手完之後離線也能用。</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  function addBubble(cls, text) {
+    var el = document.createElement('div');
+    el.className = 'bubble ' + cls;
+    el.textContent = text;
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
+  }
 
-<!-- 05 CONTACT -->
-<section id="contact">
-  <div class="sheet">
-    <div class="row last">
-      <span class="datum tl"></span><span class="datum tr"></span>
-      <div class="rail"><div class="no">05</div><div class="tag">CONTACT</div></div>
-      <div>
-        <div class="sec-head"><h2>聯絡</h2><span class="en">REQUEST FOR WORK</span><span class="rule"></span></div>
-        <div class="form-block">
-          <div class="fb-cap"><span>委託聯絡單　·　CONTACT SHEET</span><span>FORM CM-RFW</span></div>
-          <div class="fb-grid">
-            <div class="fb-cell"><span class="k">EMAIL</span><a href="mailto:chengmu00082998@gmail.com">chengmu00082998@gmail.com</a></div>
-            <div class="fb-cell"><span class="k">LINE OFFICIAL</span><a href="https://line.me/R/ti/p/@378vuckv" target="_blank" rel="noopener">@378vuckv</a></div>
-            <div class="fb-cell"><span class="k">電話 PHONE</span><a href="tel:0952159801">0952-159-801</a></div>
-            <div class="fb-note">
-              想聊客製需求、看 demo、或直接買產品都可以。來信請附：現況系統、想解決的問題、預計時程。我們會在一個工作天內回覆，給明確的時程與里程碑，不灌水也不畫大餅。
-              <br><a class="fb-cta" href="mailto:chengmu00082998@gmail.com?subject=委託詢問">來信洽詢 <span class="arrow">→</span></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  function setBusy(b) {
+    busy = b;
+    sendBtn.disabled = b;
+    quick.querySelectorAll('button').forEach(function (btn) { btn.disabled = b; });
+  }
 
-<footer>
-  <div class="tb">
-    <div class="cell"><span class="k">PROJECT 專案</span><span class="v serif">澄沐實業有限公司</span></div>
-    <div class="cell"><span class="k">SCOPE 範圍</span><span class="v">公司形象網站</span></div>
-    <div class="cell"><span class="k">REV 版次</span><span class="v">1.0 — 2026/06</span></div>
-    <div class="cell"><span class="k">OWNER 製</span><span class="v">CHENGMU</span></div>
-  </div>
-  <div class="disc">© 2026 澄沐實業有限公司 / CHENGMU INDUSTRIAL CO., LTD.　·　BUILT IN TAIWAN　·　工程師親手建造</div>
-</footer>
+  // 只送最近的對話，並確保第一則是 user（Worker 要求 user/assistant 交替）
+  function recentHistory() {
+    var h = history.slice(-MAX_HISTORY);
+    if (h.length && h[0].role !== 'user') h = h.slice(1);
+    return h;
+  }
 
+  function ask(text) {
+    text = (text || '').trim();
+    if (!text || busy) return;
+    quick.hidden = true;   // 問過第一題後收起快速提問，把空間留給對話
+    addBubble('user', text);
+    history.push({ role: 'user', content: text });
+    var wait = addBubble('bot wait', '思考中…');
+    setBusy(true);
+
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ messages: recentHistory() })
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        return { ok: res.ok, data: data };
+      });
+    }).then(function (r) {
+      wait.remove();
+      if (r.ok && r.data.reply) {
+        addBubble('bot', r.data.reply);
+        history.push({ role: 'assistant', content: r.data.reply });
+      } else {
+        history.pop();   // 這題沒有成功回覆，從對話紀錄拿掉以維持交替
+        addBubble('err', (r.data && r.data.error) || ('服務暫時無法使用，請改用以下方式聯絡：' + CONTACT));
+      }
+    }).catch(function () {
+      wait.remove();
+      history.pop();
+      addBubble('err', '目前無法連線到服務助理，請改用以下方式聯絡：' + CONTACT);
+    }).then(function () {
+      setBusy(false);
+    });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var text = input.value;
+    input.value = '';
+    ask(text);
+  });
+  quick.addEventListener('click', function (e) {
+    if (e.target.tagName === 'BUTTON') ask(e.target.textContent);
+  });
+
+  // CAD 十字游標：僅滑鼠裝置；只動 transform、rAF 節流；指標離開視窗淡出
+  if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+    var wrap = document.createElement('div');
+    wrap.className = 'cad-cursor';
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.innerHTML = '<span class="cad-x"></span><span class="cad-y"></span>';
+    document.body.appendChild(wrap);
+    var vx = wrap.querySelector('.cad-x'), hy = wrap.querySelector('.cad-y');
+    var raf = 0, px = 0, py = 0;
+    var apply = function () { raf = 0; vx.style.transform = 'translateX(' + px + 'px)'; hy.style.transform = 'translateY(' + py + 'px)'; };
+    window.addEventListener('mousemove', function (ev) {
+      px = ev.clientX; py = ev.clientY;
+      wrap.classList.add('on');
+      if (!raf) raf = requestAnimationFrame(apply);
+    }, { passive: true });
+    document.addEventListener('mouseleave', function () { wrap.classList.remove('on'); });
+    window.addEventListener('blur', function () { wrap.classList.remove('on'); });
+  }
+})();
+</script>
 <!-- Cloudflare Web Analytics -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6e87131646a644ca9906b74a8a471eee"}'></script>
-
 </body>
 </html>
