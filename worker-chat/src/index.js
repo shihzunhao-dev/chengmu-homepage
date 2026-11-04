@@ -49,8 +49,28 @@ function validateMessages(messages) {
   return null;
 }
 
+// 對話存檔：寫入 D1（binding DB）。沒有綁定資料庫時直接略過，不影響回覆。
+// 只存這一輪的新提問與回覆（前面的歷史已在先前的請求存過），不存 IP。
+async function saveTurn(env, rec) {
+  if (!env.DB) return;
+  const now = new Date().toISOString();
+  const insert = env.DB.prepare(
+    "INSERT INTO chat_messages (conversation_id, created_at, role, content, country, city, usage) VALUES (?, ?, ?, ?, ?, ?, ?)"
+  );
+  try {
+    await env.DB.batch([
+      insert.bind(rec.conversationId, now, "user", rec.question, rec.country, rec.city, null),
+      insert.bind(rec.conversationId, now, rec.role, rec.answer, rec.country, rec.city, rec.usage || null),
+    ]);
+  } catch (err) {
+    console.error("D1 save failed", err && err.message);
+  }
+}
+
+const CONV_ID_RE = /^[A-Za-z0-9-]{8,64}$/;
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
     if (pathname !== "/api/chat") return json(404, { error: "not found" });
     if (request.method !== "POST") return json(405, { error: "請使用 POST。" }, { allow: "POST" });
@@ -73,8 +93,19 @@ export default {
     const invalid = validateMessages(messages);
     if (invalid) return json(400, { error: invalid });
 
+    const cf = request.cf || {};
+    const turn = {
+      conversationId: CONV_ID_RE.test(body.conversationId || "") ? body.conversationId : "unknown",
+      question: messages[messages.length - 1].content.trim(),
+      country: cf.country || null,
+      city: cf.city || null,
+    };
+    // 回覆送出後才在背景寫入，不拖慢客戶等待時間
+    const log = (role, answer, usage) => ctx.waitUntil(saveTurn(env, { ...turn, role, answer, usage }));
+
     if (!env.ANTHROPIC_API_KEY) {
       console.error("ANTHROPIC_API_KEY is not set");
+      log("error", "ANTHROPIC_API_KEY 未設定");
       return json(500, { error: `服務暫時無法使用，請改用以下方式聯絡：${CONTACT}` });
     }
 
@@ -95,9 +126,11 @@ export default {
       });
 
       const u = response.usage || {};
-      const usageHeader = { "x-usage": `in=${u.input_tokens ?? 0},cached=${u.cache_read_input_tokens ?? 0},write=${u.cache_creation_input_tokens ?? 0},out=${u.output_tokens ?? 0}` };
+      const usage = `in=${u.input_tokens ?? 0},cached=${u.cache_read_input_tokens ?? 0},write=${u.cache_creation_input_tokens ?? 0},out=${u.output_tokens ?? 0}`;
+      const usageHeader = { "x-usage": usage };
 
       if (response.stop_reason === "refusal") {
+        log("assistant", `[refusal] ${REFUSAL_REPLY}`, usage);
         return json(200, { reply: REFUSAL_REPLY }, usageHeader);
       }
 
@@ -105,21 +138,26 @@ export default {
         .filter((b) => b.type === "text")
         .map((b) => b.text)
         .join("")
-        .trim();
-      return json(200, { reply: reply || REFUSAL_REPLY }, usageHeader);
+        .trim() || REFUSAL_REPLY;
+      log("assistant", reply, usage);
+      return json(200, { reply }, usageHeader);
     } catch (err) {
       if (err instanceof Anthropic.RateLimitError) {
+        log("error", "Anthropic 429 rate limit");
         return json(429, { error: "目前詢問的人比較多，請稍候再試。" });
       }
       if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
         console.error("Anthropic auth error", err.status);
+        log("error", `Anthropic auth error ${err.status}`);
         return json(500, { error: `服務暫時無法使用，請改用以下方式聯絡：${CONTACT}` });
       }
       if (err instanceof Anthropic.APIError) {
         console.error("Anthropic API error", err.status, err.message);
+        log("error", `Anthropic API error ${err.status}`);
         return json(502, { error: `服務暫時無法使用，請改用以下方式聯絡：${CONTACT}` });
       }
       console.error("Unexpected error", err && err.message);
+      log("error", `Unexpected error: ${err && err.message}`);
       return json(500, { error: `服務暫時無法使用，請改用以下方式聯絡：${CONTACT}` });
     }
   },

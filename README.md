@@ -75,6 +75,25 @@ wrangler deploy
 - 花費上限：Anthropic Console 工作區的每月 50 USD 上限（硬上限）；Worker 另有每 IP 每分鐘 10 次的軟性限流
 - 只在 `chengmu.com.tw` 可用；GitHub Pages 與 pages.dev 沒有 `/api`，對話框會改顯示聯絡方式
 
+#### 對話紀錄（D1 資料庫 `chengmu-chat-log`）
+
+每次問答（客人提問＋助理回覆）都存進 D1 的 `chat_messages` 表，不存 IP。第一次設定：
+
+```powershell
+cd worker-chat
+wrangler d1 create chengmu-chat-log --binding DB --update-config --location apac
+wrangler d1 execute chengmu-chat-log --remote --file=./schema.sql
+wrangler deploy
+```
+
+匯出到本機（預設 `D:\澄沐公司\官網客服紀錄`，產生 CSV 與依對話分組的 Markdown）：
+
+```powershell
+cd worker-chat
+.\export-chats.ps1            # 全部
+.\export-chats.ps1 -Days 7    # 最近 7 天
+```
+
 ### GitHub Pages（已部署 ✅）
 
 🟢 **https://shihzunhao-dev.github.io/chengmu-homepage/**
