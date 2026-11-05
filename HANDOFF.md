@@ -1,6 +1,6 @@
 # 澄沐官網 交接文件
 
-最後更新：2026-11-05（commit `da7ed7d`）
+最後更新：2026-11-05（清理舊檔後）
 
 正式網址：https://chengmu.com.tw/ ・ 專案 wiki：`chengmu-homepage`（ProjectWiki）
 
@@ -36,9 +36,10 @@ worker-chat/               AI 服務助理 Worker
   schema.sql、migrations/  資料表結構（0002 加 ip、0003 leads、0004 notify_count）
   export-chats.ps1         備用：用 wrangler 匯出對話成 CSV / Markdown
 console/                   ChengMu-Console（WinForms net472，SE-Deploy 家族樣式）
-worker/                    舊聯絡表單 Worker（已不使用）
-assets/site.css、fx.js     舊版樣式（已不使用，未上傳；使用者尚未決定是否刪除）
 ```
+
+2026-11-05 已清掉的舊檔（要找回用 git 歷史）：`assets/site.css`、`assets/fx.js`（舊版樣式與特效）、
+`worker/contact.js`、`worker/DEPLOY.md`（舊聯絡表單 Worker）、`products/*.html`（舊產品頁）。
 
 ---
 
@@ -105,7 +106,8 @@ dotnet build -c Release
 |---|---|
 | 舊檔快取殘留 | chengmu.com.tw 曾仍回已刪除的舊產品頁、README.md 等（pages.dev 與預覽網址正確 404，zone 清快取無效）。待過期後再查；還在就加 Worker 路由強制 404 |
 | 隱私告知 | 輸入框下的「對話與 IP 會保存」已依使用者要求拿掉；個資法上建議之後在版權列放「隱私說明」連結 |
-| 測試資料 | D1 有測試紀錄：conversation_id `selftest-claude-0001`、`d55a64ae-…`、`unknown`（使用者舊分頁）、lead `selftest-claude-lead-0001`（王先生）；使用者要求時再刪 |
-| 舊檔案 | `assets/site.css`、`assets/fx.js`、`worker/` 已不用，刪除前要問使用者 |
+| 舊聯絡表單 Worker | 雲端上的 `chengmu-contact` Worker 還在（程式檔已刪），待使用者跑 `wrangler delete --name chengmu-contact`；Resend 的 API key 也可到 Resend 後台撤銷 |
+| 樣稿資料夾 | `D:\chengmu_homepage_mockups\` 使用者同意刪除，但 `rm -rf` 被 hook 擋下，待使用者手動刪 |
 | 自有產品 | 是否讓 AI 介紹 PCC Tender Watch、家庭存摺、預算系統，使用者尚未決定（目前不介紹） |
-| 樣稿資料夾 | `D:\chengmu_homepage_mockups\`（含約 22 MB 源樣黑體）可刪，待使用者確認 |
+
+D1 測試紀錄已於 2026-11-05 清除；保留的兩段（`3f0ecab6-…`、`25b7fb8e-…`）無法確定是測試還是真實訪客，未刪。

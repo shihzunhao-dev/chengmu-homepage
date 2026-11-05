@@ -1,137 +1,44 @@
-# 澄沐實業有限公司 — 公司形象網站
+# 澄沐實業有限公司 — 官網
 
-[![Pages](https://img.shields.io/badge/deploy-Cloudflare%20Pages-orange)](https://pages.cloudflare.com)
+正式網址：https://chengmu.com.tw/
 
-> 為客戶提供深度客製軟體與資訊情報工具。
+極簡單頁官網：公司 logo、三項服務（客製化程式系統開發／程式系統維護／資訊專業服務），
+首頁輸入框直接連到 AI 服務助理（Claude Haiku 5.5），客人有合作意願時會整理需求寄信通知。
+
+**現況、檔案地圖、部署步驟、設計決定與待辦，都寫在 [`HANDOFF.md`](HANDOFF.md)。**
 
 ## 結構
 
 ```
-chengmu_homepage/
-├── index.html                          首頁（含聯絡表單）
-├── assets/
-│   └── logo.png                        公司 logo（</> 漸層）
-├── products/
-│   ├── pcc-tender-watch.html           政府採購標案監控
-│   ├── my-health-bank.html             家庭存摺
-│   └── budget-system.html              客製化預算管理系統
-├── worker/
-│   ├── contact.js                      Cloudflare Worker — 聯絡表單後端
-│   └── DEPLOY.md                       Worker 部署指南（Resend API + 環境變數）
-└── README.md
+index.html            首頁（CSS/JS 都在檔內）
+404.html              找不到頁面
+assets/               logo、LINE QR code、更紗英數字型
+deploy.ps1            網站部署（只上傳 $SiteFiles 白名單）
+worker-chat/          AI 服務助理（Cloudflare Worker + D1 + 寄信）
+console/              ChengMu-Console 中控台（看對話紀錄）
 ```
-
-純靜態站，無 build step，無外部依賴（除 Google Fonts CDN）。
 
 ## 本機預覽
 
-```bash
+```powershell
 cd D:\chengmu_homepage
 python -m http.server 3500
-# → http://localhost:3500
+# → http://localhost:3500（/api/chat 不可用，對話會顯示無法連線）
 ```
 
-## 設計系統
-
-- **色系**：暗色 Linear（`#08090a` + `#7170ff`）/ 淺色 Claude Code Desktop（`#faf9f5` + `#c96442`）
-- **字型**：Inter + JetBrains Mono + Noto Sans TC
-- **動效**：page transition、glow sphere（mouse-tracking）、scroll reveal
-- **主題切換**：localStorage key `cm-theme`
-
-## 部署
-
-### 🚀 一鍵部署：`deploy.ps1`
-
-兩條部署路徑一個指令同時跑：
+## 部署（兩個部署要分開做）
 
 ```powershell
-.\deploy.ps1 "feat: 新增聯絡表單"
-# 或
-.\deploy.ps1                # 互動式問你 commit message
-```
+# 網站
+.\deploy.ps1 "commit message"     # git push + Cloudflare Pages
+.\deploy.ps1 -SkipGit             # 只推 Cloudflare Pages
 
-選項：
-- `-SkipGit`：只推 CF Pages、不動 git
-- `-SkipPages`：只 push GitHub、不推 CF Pages
-
-完成後會印兩個 production URL 確認。
-
-CF Pages 只上傳 `deploy.ps1` 裡 `$SiteFiles` 白名單的檔案（先複製到 `dist/` 再部署），
-新增網站檔案時要把它加進白名單，否則不會上線。
-
-### 🤖 AI 服務助理（`worker-chat/`，另一個部署）
-
-首頁右下角「問問澄沐」呼叫 `https://chengmu.com.tw/api/chat`，由 Cloudflare Worker `chengmu-chat` 處理，
-模型是 Claude Haiku 5.5。**`deploy.ps1` 不會更新它**，改了 `worker-chat/` 底下的檔案要另外部署：
-
-```powershell
+# AI 服務助理（改了 worker-chat/ 底下任何檔案，含 knowledge.md）
 cd worker-chat
-npm install                              # 第一次或換電腦時
-wrangler secret put ANTHROPIC_API_KEY    # 第一次或換金鑰時
 wrangler deploy
 ```
 
-- 知識來源：`worker-chat/knowledge.md`（只寫服務類型，不寫客戶、案件、人名）；回答規則在 `src/index.js` 的 `RULES`
-- 花費上限：Anthropic Console 工作區的每月 50 USD 上限（硬上限）；Worker 另有每 IP 每分鐘 10 次的軟性限流
-- 只在 `chengmu.com.tw` 可用；GitHub Pages 與 pages.dev 沒有 `/api`，對話框會改顯示聯絡方式
-
-#### 對話紀錄（D1 資料庫 `chengmu-chat-log`）
-
-每次問答（客人提問＋助理回覆）都存進 D1 的 `chat_messages` 表，不存 IP。第一次設定：
-
-```powershell
-cd worker-chat
-wrangler d1 create chengmu-chat-log --binding DB --update-config --location apac
-wrangler d1 execute chengmu-chat-log --remote --file=./schema.sql
-wrangler deploy
-```
-
-匯出到本機（預設 `D:\澄沐公司\官網客服紀錄`，產生 CSV 與依對話分組的 Markdown）：
-
-```powershell
-cd worker-chat
-.\export-chats.ps1            # 全部
-.\export-chats.ps1 -Days 7    # 最近 7 天
-```
-
-### GitHub Pages（已部署 ✅）
-
-🟢 **https://shihzunhao-dev.github.io/chengmu-homepage/**
-
-push 到 main 後 30-60 秒自動更新。
-
-### Cloudflare Pages（已部署 ✅）
-
-🟢 **https://chengmu.com.tw/**（正式網域，2026-11-04 綁定）
-
-- `www.chengmu.com.tw` 以 Cloudflare Redirect Rule「www to apex」301 轉到 `chengmu.com.tw`
-- Pages 預設網址 https://chengmu-homepage.pages.dev/ 仍可連，canonical 已統一指向正式網域
-
-`wrangler pages deploy` 後 ~10 秒生效。
-
-### Cloudflare Pages 部署紀錄（已上線，技術備忘）
-
-走 wrangler CLI 直推（CF dashboard 的 Connect-to-Git OAuth 有 bug）：
-```powershell
-wrangler login                                    # 一次就好
-wrangler pages project create chengmu-homepage --production-branch=main
-wrangler pages deploy . --project-name=chengmu-homepage --branch=main --commit-dirty=true
-```
-之後用 `.\deploy.ps1` 一行就好。
-
-### 聯絡表單 Worker（必要：表單才能寄信）
-
-詳見 [`worker/DEPLOY.md`](worker/DEPLOY.md)。流程摘要：
-
-1. 申請 [Resend](https://resend.com) 拿 API key（免費 3000 封/月）
-2. dash.cloudflare.com → 建 Worker `chengmu-contact` → 貼 `worker/contact.js`
-3. Worker Settings → Variables 加：
-   - `RESEND_API_KEY` (Secret)
-   - `RECIPIENT_EMAIL` (Plain) = chengmu00082998@gmail.com
-   - `ALLOWED_ORIGINS` (Plain) = `https://chengmu.com.tw,https://www.chengmu.com.tw,https://shihzunhao-dev.github.io,https://chengmu-homepage.pages.dev`
-4. 完成後 `index.html` 內的 `CONTACT_WORKER_URL` 對齊 Worker 實際 URL
-
-→ Worker 沒部署前，表單會顯示「網路錯誤」；用戶可改用 Email / LINE / 電話三張卡片直接聯絡（仍可正常用）。
+新增網站檔案時要加進 `deploy.ps1` 的 `$SiteFiles` 白名單，否則不會上線。
 
 ## 聯絡
 
