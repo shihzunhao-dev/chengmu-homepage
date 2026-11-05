@@ -103,6 +103,7 @@ if (-not $SkipPages) {
         'sitemap.xml',
         'assets\logo.svg',
         'assets\logo.png',
+        'assets\line-qr.svg',
         'assets\fonts\SarasaTermTC-Latin-Regular.woff2',
         'assets\fonts\SarasaTermTC-Latin-Bold.woff2'
     )
