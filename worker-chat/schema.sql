@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS leads (
   contact       TEXT,
   company       TEXT,
   service       TEXT,
-  summary       TEXT
+  summary       TEXT,
+  notify_count  INTEGER NOT NULL DEFAULT 1   -- 這段對話已寄幾封（含補充，上限 3）
 );
 CREATE INDEX IF NOT EXISTS idx_leads_time ON leads (created_at);
