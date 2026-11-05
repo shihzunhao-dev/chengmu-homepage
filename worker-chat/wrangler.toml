@@ -29,4 +29,10 @@ binding = "DB"
 database_name = "chengmu-chat-log"
 database_id = "33bab8c1-cd58-48a4-94c6-4754e13fe36f"
 
+# 轉交工程師的通知信（Cloudflare Email Service）：只能寄到這個已驗證的收件地址
+# 前置：chengmu.com.tw 啟用 Email Routing，並驗證 chengmu00082998@gmail.com 為 destination address
+[[send_email]]
+name = "EMAIL"
+destination_address = "chengmu00082998@gmail.com"
+
 # 機密：ANTHROPIC_API_KEY 用 `wrangler secret put ANTHROPIC_API_KEY` 設定，不寫在這裡

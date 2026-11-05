@@ -14,3 +14,16 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 CREATE INDEX IF NOT EXISTS idx_chat_conv ON chat_messages (conversation_id, id);
 CREATE INDEX IF NOT EXISTS idx_chat_time ON chat_messages (created_at);
 CREATE INDEX IF NOT EXISTS idx_chat_ip ON chat_messages (ip, id);
+
+-- 轉交工程師的需求紀錄（同 migrations/0003_leads.sql）
+CREATE TABLE IF NOT EXISTS leads (
+  lead_key      TEXT PRIMARY KEY,
+  created_at    TEXT NOT NULL,
+  ip            TEXT,
+  customer_name TEXT,
+  contact       TEXT,
+  company       TEXT,
+  service       TEXT,
+  summary       TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_leads_time ON leads (created_at);
