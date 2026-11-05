@@ -106,8 +106,7 @@ dotnet build -c Release
 |---|---|
 | 舊檔快取殘留 | chengmu.com.tw 曾仍回已刪除的舊產品頁、README.md 等（pages.dev 與預覽網址正確 404，zone 清快取無效）。待過期後再查；還在就加 Worker 路由強制 404 |
 | 隱私告知 | 輸入框下的「對話與 IP 會保存」已依使用者要求拿掉；個資法上建議之後在版權列放「隱私說明」連結 |
-| 舊聯絡表單 Worker | 雲端上的 `chengmu-contact` Worker 還在（程式檔已刪），待使用者跑 `wrangler delete --name chengmu-contact`；Resend 的 API key 也可到 Resend 後台撤銷 |
-| 樣稿資料夾 | `D:\chengmu_homepage_mockups\` 使用者同意刪除，但 `rm -rf` 被 hook 擋下，待使用者手動刪 |
+| Resend API key | 舊聯絡表單用的，Worker 已刪（2026-11-05），可到 Resend 後台撤銷 |
 | 自有產品 | 是否讓 AI 介紹 PCC Tender Watch、家庭存摺、預算系統，使用者尚未決定（目前不介紹） |
 
 D1 測試紀錄已於 2026-11-05 清除；保留的兩段（`3f0ecab6-…`、`25b7fb8e-…`）無法確定是測試還是真實訪客，未刪。
