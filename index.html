@@ -21,7 +21,7 @@
 <link rel="icon" type="image/png" href="assets/logo.png">
 <link rel="apple-touch-icon" href="assets/logo.png">
 <meta name="theme-color" content="#f4f2ec">
-<script>try { if (localStorage.getItem('cm-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch (e) {}</script>
+<script>(function () { var h = new Date().getHours(); if (h >= 18 || h < 6) document.documentElement.dataset.theme = 'dark'; })();</script>
 <link rel="preload" href="assets/fonts/SarasaTermTC-Latin-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,7 +76,7 @@
     --font: "Sarasa Latin", "Noto Sans TC", sans-serif;
     color-scheme: light;
   }
-  /* 深色模式：由右上角按鈕切換，選擇存在 localStorage */
+  /* 深色模式：晚上 18–05 點自動套用（見 JS 的隨時間變色）；底色等 5 個變數另由 JS 每小時覆寫 */
   html[data-theme="dark"] {
     --bg: #16181b; --ink: #e8e6e1; --muted: #a8adb2; --line: #34383d;
     --grid: rgba(140,180,230,0.07); --cad: #8bb8e8;
@@ -84,8 +84,10 @@
     --panel: #1e2125; --bot: #262b31; --err-bg: #3a2326; --err-ink: #f2b8b8;
     color-scheme: dark;
   }
-  .theme-btn { border: 1px solid var(--line); background: transparent; color: var(--muted); font: 500 15px var(--font); letter-spacing: .04em; padding: 6px 14px; border-radius: 999px; cursor: pointer; white-space: nowrap; flex: none; }
-  .theme-btn:hover { color: var(--ink); border-color: var(--ink); }
+  /* 右上角時鐘：等寬數字；手機不顯示（手機本身有時鐘） */
+  .clock { font: 500 17px var(--font); font-variant-numeric: tabular-nums; letter-spacing: .08em; color: var(--ink); flex: none; }
+  /* 每小時換色時用 1.5 秒淡入，不是瞬間跳色 */
+  body, .c-box, .bubble.bot, .bottom { transition: background-color 1.5s ease, color 1.5s ease, border-color 1.5s ease; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body { background: var(--bg); color: var(--ink); font: 400 18px/1.8 var(--font); -webkit-font-smoothing: antialiased; }
@@ -167,12 +169,13 @@
     .bottom .qr { display: none; }
     .bubble { max-width: 92%; }
     .cad-cursor { display: none; }
+    .clock { display: none; }
   }
 </style>
 </head>
 <body>
 <div class="card">
-  <div class="top"><span>CHENGMU INDUSTRIAL CO., LTD.</span><button type="button" class="theme-btn" id="themeBtn">深色模式</button></div>
+  <div class="top"><span>CHENGMU INDUSTRIAL CO., LTD.</span><span class="clock" id="clock" aria-hidden="true"></span></div>
 
   <main class="center">
     <img class="logo" src="assets/logo.svg" alt="澄沐實業 logo" width="466" height="277">
@@ -225,22 +228,49 @@
     } catch (e) { return String(Date.now()) + '-' + Math.random().toString(36).slice(2, 10); }
   })();
 
-  // 深淺色切換：按鈕文字顯示「切過去」的模式
+  // ── 隨時間變色：依訪客電腦的時間，24 小時各一組顏色，整點換一次 ──
+  // 白天 06–17 用淺色組：中午最亮，越接近清晨／傍晚越暗（清晨偏玫瑰灰、傍晚偏琥珀）。
+  // 晚上 18–05 用深色組：午夜最暗，越接近傍晚／清晨越亮（傍晚偏紫、清晨偏青藍）。
+  // 文字顏色只在 06:00 與 18:00 切換一次；24 個時段內文對比皆 ≥ 9:1、次要文字 ≥ 5.6:1。
+  // 預覽 24 色：demo-daylight.html（本機用，不部署）
   var root = document.documentElement;
-  var themeBtn = document.getElementById('themeBtn');
   var themeMeta = document.querySelector('meta[name="theme-color"]');
-  function applyTheme(theme) {
-    if (theme === 'dark') root.dataset.theme = 'dark'; else delete root.dataset.theme;
-    themeBtn.textContent = theme === 'dark' ? '淺色模式' : '深色模式';
-    themeBtn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-    themeMeta.setAttribute('content', theme === 'dark' ? '#16181b' : '#f4f2ec');
+  var clock = document.getElementById('clock');
+  var KEYS = ['bg', 'panel', 'bot', 'line', 'muted'];
+  var DAY = {
+    center: { bg: '#f4f2ec', panel: '#ffffff', bot: '#eef3f5', line: '#dcdcd6', muted: '#555a5f' },
+    dawn:   { bg: '#ddd2cd', panel: '#f4eeec', bot: '#e4e4e8', line: '#c2b6b0', muted: '#46494e' },
+    dusk:   { bg: '#dacbb0', panel: '#f3ead9', bot: '#e5e0d2', line: '#beae90', muted: '#46494e' }
+  };
+  var NIGHT = {
+    center: { bg: '#111317', panel: '#1b1e22', bot: '#23272d', line: '#30343a', muted: '#a8adb2' },
+    dusk:   { bg: '#38344c', panel: '#433f59', bot: '#4b4763', line: '#58536f', muted: '#c4c5cd' },
+    dawn:   { bg: '#2b3d4b', panel: '#364958', bot: '#3d5160', line: '#4b6172', muted: '#c0c9cf' }
+  };
+  function hexToRgb(h) { var n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+  function mix(a, b, t) {
+    var x = hexToRgb(a), y = hexToRgb(b);
+    return '#' + [0, 1, 2].map(function (i) { return ('0' + Math.round(x[i] + (y[i] - x[i]) * t).toString(16)).slice(-2); }).join('');
   }
-  applyTheme(root.dataset.theme === 'dark' ? 'dark' : 'light');
-  themeBtn.addEventListener('click', function () {
-    var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-    try { localStorage.setItem('cm-theme', next); } catch (e) {}
-  });
+  function applyHour(hour) {
+    var isDay = hour >= 6 && hour < 18;
+    var k = isDay ? hour - 6 : (hour - 18 + 24) % 24;     // 0..11，在這個時段的第幾小時
+    var t = Math.abs(k - 5.5) / 5.5;                       // 0 = 時段正中（最亮／最暗），1 = 交界
+    var set = isDay ? DAY : NIGHT;
+    var edge = isDay ? (k < 6 ? set.dawn : set.dusk) : (k < 6 ? set.dusk : set.dawn);
+    if (isDay) delete root.dataset.theme; else root.dataset.theme = 'dark';
+    KEYS.forEach(function (key) { root.style.setProperty('--' + key, mix(set.center[key], edge[key], t)); });
+    themeMeta.setAttribute('content', mix(set.center.bg, edge.bg, t));
+  }
+  var shownHour = -1;
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function tick() {
+    var now = new Date(), hour = now.getHours();
+    clock.textContent = pad(hour) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    if (hour !== shownHour) { shownHour = hour; applyHour(hour); }
+  }
+  tick();
+  setInterval(tick, 1000);
 
   // 輸入框隨內容長高（最多約 6 行，超過就捲動）
   function autoGrow() {
