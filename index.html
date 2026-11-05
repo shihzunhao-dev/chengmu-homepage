@@ -84,7 +84,7 @@
     --panel: #1e2125; --bot: #262b31; --err-bg: #3a2326; --err-ink: #f2b8b8;
     color-scheme: dark;
   }
-  .theme-btn { border: 1px solid var(--line); background: transparent; color: var(--muted); font: 500 15px var(--font); letter-spacing: .04em; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+  .theme-btn { border: 1px solid var(--line); background: transparent; color: var(--muted); font: 500 15px var(--font); letter-spacing: .04em; padding: 6px 14px; border-radius: 999px; cursor: pointer; white-space: nowrap; flex: none; }
   .theme-btn:hover { color: var(--ink); border-color: var(--ink); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -109,7 +109,7 @@
   .grid-fx { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
   .card { min-height: 100vh; max-width: 1080px; margin: 0 auto; padding: 48px 40px 120px; display: grid; grid-template-rows: auto 1fr auto; }
-  .top { display: flex; justify-content: space-between; font-size: 15px; font-weight: 500; color: var(--muted); letter-spacing: .1em; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; color: var(--muted); letter-spacing: .1em; }
 
   .center { display: grid; grid-template-columns: auto 1fr; gap: 56px; align-items: center; padding: 56px 0; }
   .logo { width: 210px; height: auto; display: block; }
@@ -124,30 +124,27 @@
   .bottom a:hover { color: var(--blue); }
   .copy { grid-column: 1 / -1; padding-top: 28px !important; font-size: 14px !important; color: var(--muted); }
 
-  /* 服務諮詢對話框 */
-  .fab { position: fixed; right: 28px; bottom: 28px; z-index: 50; background: var(--ink); color: var(--bg); border: 0; font: 700 17px var(--font); padding: 16px 24px; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-  .fab::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #b9ca3b, #0f70aa); }
-  .panel { position: fixed; right: 28px; bottom: 96px; z-index: 50; width: 400px; max-width: calc(100vw - 32px); background: var(--panel); border: 1px solid var(--ink); display: flex; flex-direction: column; height: min(620px, calc(100vh - 140px)); }
-  .panel[hidden] { display: none; }
-  .p-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); }
-  .p-head .t { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 700; }
-  .p-head img { width: 34px; height: auto; }
-  .p-head button { border: 0; background: none; font-size: 24px; line-height: 1; cursor: pointer; color: var(--muted); padding: 4px 8px; }
-  .p-log { flex: 1; padding: 16px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-  .bubble { padding: 12px 15px; font-size: 16.5px; line-height: 1.7; max-width: 90%; white-space: pre-wrap; overflow-wrap: anywhere; }
+  /* 服務諮詢：首頁直接對話（ChatGPT 式）——訊息在上、輸入框在下 */
+  .chat { grid-column: 1 / -1; width: 100%; max-width: 820px; justify-self: center; }
+  .c-log { display: flex; flex-direction: column; gap: 14px; max-height: min(52vh, 560px); overflow-y: auto; padding: 4px 2px 18px; }
+  .c-log:empty { display: none; }
+  .bubble { padding: 12px 16px; font-size: 17px; line-height: 1.75; max-width: 85%; white-space: pre-wrap; overflow-wrap: anywhere; border-radius: 14px; }
   .bubble.bot { background: var(--bot); align-self: flex-start; }
   .bubble.user { background: var(--ink); color: var(--bg); align-self: flex-end; }
   .bubble.err { background: var(--err-bg); color: var(--err-ink); align-self: flex-start; }
   .bubble.wait { color: var(--muted); }
-  .p-quick[hidden] { display: none; }
-  .p-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 12px; }
-  .p-quick button { border: 1px solid var(--line); background: var(--panel); font: 500 15px var(--font); padding: 8px 12px; cursor: pointer; color: var(--ink); }
-  .p-quick button:hover { border-color: var(--ink); }
-  .p-input { display: flex; border-top: 1px solid var(--line); }
-  .p-input input { flex: 1; min-width: 0; border: 0; padding: 15px 16px; font: 400 17px var(--font); outline: none; background: var(--panel); color: var(--ink); }
-  .p-input button { border: 0; background: var(--blue); color: #fff; font: 700 16px var(--font); padding: 0 18px; cursor: pointer; }
-  .p-input button:disabled, .p-quick button:disabled { opacity: .5; cursor: default; }
-  .p-note { font-size: 14px; color: var(--muted); padding: 8px 16px 12px; }
+  .c-box { display: flex; align-items: flex-end; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 10px 10px 10px 20px; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+  .c-box:focus-within { border-color: var(--blue); }
+  .c-box textarea { flex: 1; min-width: 0; border: 0; outline: none; resize: none; background: transparent; color: var(--ink); font: 400 18px/1.6 var(--font); padding: 7px 0; max-height: 9.6em; }
+  .c-box textarea::placeholder { color: var(--muted); }
+  .c-send { flex: none; width: 46px; height: 46px; border: 0; border-radius: 50%; background: var(--blue); color: #fff; cursor: pointer; display: grid; place-items: center; }
+  .c-send:disabled { opacity: .45; cursor: default; }
+  .c-quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .c-quick[hidden] { display: none; }
+  .c-quick button { border: 1px solid var(--line); background: var(--panel); color: var(--ink); font: 500 15px var(--font); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+  .c-quick button:hover { border-color: var(--ink); }
+  .c-quick button:disabled { opacity: .5; cursor: default; }
+  .c-note { font-size: 14px; color: var(--muted); margin-top: 10px; }
 
   @media (max-width: 720px) {
     .card { padding: 28px 22px 110px; }
@@ -155,8 +152,8 @@
     .logo { width: 150px; }
     .bottom { grid-template-columns: 1fr; }
     .bottom div { padding: 14px 0 0; }
-    .fab { right: 16px; bottom: 16px; }
-    .panel { right: 16px; left: 16px; width: auto; bottom: 84px; height: calc(100vh - 120px); }
+    .c-box textarea { font-size: 17px; }
+    .bubble { max-width: 92%; }
     .cad-cursor { display: none; }
   }
 </style>
@@ -171,6 +168,21 @@
       <h1>澄沐實業</h1>
       <p class="tag">客製化程式系統開發<i>／</i>程式系統維護<i>／</i>資訊專業服務</p>
     </div>
+    <section class="chat" aria-label="服務諮詢">
+      <div class="c-log" id="log" aria-live="polite"></div>
+      <form class="c-box" id="form">
+        <textarea id="q" rows="1" maxlength="500" autocomplete="off" placeholder="請輸入您的問題，例如：舊系統可以接手維護嗎？" aria-label="輸入問題"></textarea>
+        <button type="submit" class="c-send" id="sendBtn" aria-label="送出">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
+      </form>
+      <div class="c-quick" id="quick">
+        <button type="button">開發一套系統的流程是什麼？</button>
+        <button type="button">舊系統可以接手維護嗎？</button>
+        <button type="button">資訊專業服務包含哪些？</button>
+      </div>
+      <p class="c-note">AI 回覆；對話內容與連線 IP 會保存，供工程師了解您的需求。報價與時程以工程師評估為準。</p>
+    </section>
   </main>
 
   <footer class="bottom">
@@ -181,31 +193,11 @@
   </footer>
 </div>
 
-<section class="panel" id="panel" role="dialog" aria-label="服務諮詢" hidden>
-  <div class="p-head"><span class="t"><img src="assets/logo.svg" alt="">服務諮詢</span><button type="button" id="closeBtn" aria-label="關閉">×</button></div>
-  <div class="p-log" id="log" aria-live="polite">
-    <div class="bubble bot">您好，我是澄沐的服務助理，可以說明我們提供的三項服務：客製化程式系統開發、程式系統維護、資訊專業服務。請問有什麼想了解的？</div>
-  </div>
-  <div class="p-quick" id="quick">
-    <button type="button">開發一套系統的流程是什麼？</button>
-    <button type="button">舊系統可以接手維護嗎？</button>
-    <button type="button">資訊專業服務包含哪些？</button>
-  </div>
-  <form class="p-input" id="form">
-    <input id="q" type="text" maxlength="500" autocomplete="off" placeholder="輸入問題…" aria-label="輸入問題">
-    <button type="submit" id="sendBtn">送出</button>
-  </form>
-  <div class="p-note">AI 回覆；對話內容與連線 IP 會保存，供工程師了解您的需求。報價與時程以工程師評估為準。</div>
-</section>
-<button class="fab" type="button" id="fab" aria-controls="panel" aria-expanded="false">問問澄沐</button>
-
 <script>
 (function () {
   'use strict';
   var CONTACT = 'Email：chengmu00082998@gmail.com／LINE：@378vuckv／電話：0952-159-801';
   var MAX_HISTORY = 10;   // 與 Worker 的上限一致
-  var panel = document.getElementById('panel');
-  var fab = document.getElementById('fab');
   var log = document.getElementById('log');
   var form = document.getElementById('form');
   var input = document.getElementById('q');
@@ -243,13 +235,23 @@
     try { localStorage.setItem('cm-theme', next); } catch (e) {}
   });
 
-  function setOpen(open) {
-    panel.hidden = !open;
-    fab.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) input.focus();
+  // 輸入框隨內容長高（最多約 6 行，超過就捲動）
+  function autoGrow() {
+    input.style.height = 'auto';
+    input.style.height = input.scrollHeight + 'px';
   }
-  fab.addEventListener('click', function () { setOpen(panel.hidden); });
-  document.getElementById('closeBtn').addEventListener('click', function () { setOpen(false); });
+  input.addEventListener('input', autoGrow);
+  // 窄螢幕用短提示，避免提示文字換行被單行輸入框切掉
+  if (window.matchMedia && window.matchMedia('(max-width: 720px)').matches) input.placeholder = '請輸入您的問題…';
+  // Enter 送出、Shift+Enter 換行；中文輸入法選字中（isComposing）按 Enter 不送出
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
+      e.preventDefault();
+      form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true }));
+    }
+  });
+  // 有滑鼠的裝置一打開就能直接打字；手機不自動跳鍵盤
+  if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) input.focus({ preventScroll: true });
 
   function addBubble(cls, text) {
     var el = document.createElement('div');
@@ -312,6 +314,7 @@
     e.preventDefault();
     var text = input.value;
     input.value = '';
+    autoGrow();
     ask(text);
   });
   quick.addEventListener('click', function (e) {
@@ -442,7 +445,7 @@
     // 點擊格子：先往上輕彈，再受重力旋轉掉出畫面；點連結、按鈕、對話框時不觸發
     window.addEventListener('pointerdown', function (ev) {
       if (ev.button !== 0) return;
-      if (ev.target.closest && ev.target.closest('a, button, input, textarea, .panel, .fab')) return;
+      if (ev.target.closest && ev.target.closest('a, button, input, textarea, .chat')) return;
       var c = Math.floor(ev.clientX / CELL), r = Math.floor(ev.clientY / CELL);
       if (falling.length >= MAX_FALLING) falling.shift();
       falling.push({
