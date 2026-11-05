@@ -116,6 +116,7 @@
   h1 { font: 700 clamp(42px, 6.6vw, 80px)/1.2 var(--font); letter-spacing: .02em; }
   .tag { font-size: clamp(19px, 2.2vw, 24px); font-weight: 500; line-height: 1.7; margin-top: 16px; }
   .tag i { font-style: normal; color: var(--teal); margin: 0 .5em; }
+  .tag .ti { white-space: nowrap; }   /* 斜線跟著前一項，換行只發生在項目之間 */
 
   .bottom { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); }
   .bottom div { padding: 20px 20px 0 0; font-size: 16px; }
@@ -147,11 +148,21 @@
   .c-send:disabled { opacity: .45; cursor: default; }
 
   @media (max-width: 720px) {
-    .card { padding: 28px 22px 110px; }
-    .center { grid-template-columns: 1fr; gap: 28px; padding: 36px 0; }
-    .logo { width: 150px; }
+    .card { padding: 24px 20px 40px; }
+    .top { font-size: 12.5px; letter-spacing: .04em; }
+    /* logo 與公司名並排，服務項目放在下面整列 */
+    .center { grid-template-columns: 92px 1fr; gap: 18px 16px; padding: 32px 0 28px; align-content: center; }
+    .center > div { display: contents; }
+    .logo { width: 92px; }
+    h1 { font-size: 40px; }
+    .tag { grid-column: 1 / -1; margin-top: 0; font-size: 18px; }
+    /* 頁尾：標籤與內容同一行 */
     .bottom { grid-template-columns: 1fr; }
-    .bottom div { padding: 14px 0 0; }
+    .bottom div { padding: 12px 0 0; font-size: 15px; }
+    .bottom .k { display: inline-block; width: 60px; }
+    .bottom .line-cell { display: block; }
+    .bottom .line-text { display: inline; }
+    .copy { padding-top: 18px !important; }
     .c-box textarea { font-size: 17px; }
     .bottom .qr { display: none; }
     .bubble { max-width: 92%; }
@@ -167,7 +178,7 @@
     <img class="logo" src="assets/logo.svg" alt="澄沐實業 logo" width="466" height="277">
     <div>
       <h1>澄沐實業</h1>
-      <p class="tag">客製化程式系統開發<i>／</i>程式系統維護<i>／</i>資訊專業服務</p>
+      <p class="tag"><span class="ti">客製化程式系統開發<i>／</i></span><span class="ti">程式系統維護<i>／</i></span><span class="ti">資訊專業服務</span></p>
     </div>
   </main>
 
