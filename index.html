@@ -84,7 +84,7 @@
     --panel: #1e2125; --bot: #262b31; --err-bg: #3a2326; --err-ink: #f2b8b8;
     color-scheme: dark;
   }
-  /* 右上角時鐘：等寬數字；手機不顯示（手機本身有時鐘） */
+  /* 右上角時鐘：等寬數字；手機版縮小到跟公司英文名同一列 */
   .clock { font: 500 17px var(--font); font-variant-numeric: tabular-nums; letter-spacing: .08em; color: var(--ink); flex: none; }
   /* 每小時換色時用 1.5 秒淡入，不是瞬間跳色 */
   body, .c-box, .bubble.bot, .bottom { transition: background-color 1.5s ease, color 1.5s ease, border-color 1.5s ease; }
@@ -169,7 +169,7 @@
     .bottom .qr { display: none; }
     .bubble { max-width: 92%; }
     .cad-cursor { display: none; }
-    .clock { display: none; }
+    .clock { font-size: 13px; letter-spacing: .04em; }
   }
 </style>
 </head>
