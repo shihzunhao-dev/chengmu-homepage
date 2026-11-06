@@ -16,6 +16,7 @@
 | 字體 | 英數：自架更紗英數裁字檔 `assets/fonts/SarasaTermTC-Latin-*.woff2`；中文：Google Fonts Noto Sans TC |
 | AI 服務助理 | Worker `chengmu-chat`，路由 `chengmu.com.tw/api/*`，模型 `claude-haiku-5-5`（thinking disabled、effort high） |
 | 對話紀錄 | D1 `chengmu-chat-log`：`chat_messages`（每則問答＋IP）、`leads`（轉交工程師紀錄） |
+| 需求整理 | 客人需求模糊時（例如「想做系統但沒頭緒」），AI 一題一題問（附選項），最後產生「需求摘要」（系統目的／使用者／主要功能／資料內容／使用環境／現況與困擾／期望時程／待確認事項），摘要下有「複製摘要」按鈕；確認後留聯絡方式，摘要隨通知信寄給工程師。規則在 `src/index.js` RULES 第 11 條；對話上限 40 則（Worker `MAX_MESSAGES` 與前端 `MAX_HISTORY` 要一致） |
 | 轉交工程師 | 客人有合作意願並留下聯絡方式時，AI 呼叫 `notify_engineer` 寄信到 chengmu00082998@gmail.com；同一段對話最多 3 封 |
 | 中控台 | `D:\chengmu_deploy\ChengMu-Console.exe`（原始碼 `console/`），依日期／客戶 IP 看對話、搜尋、匯出 |
 | 網域與郵件 DNS | chengmu.com.tw 綁 CF Pages；www 301 轉 apex；Email Routing 已啟用；SPF、DKIM、DMARC（`p=none`）都已設定 |

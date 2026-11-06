@@ -142,6 +142,8 @@
   .bubble.user { background: var(--ink); color: var(--bg); align-self: flex-end; }
   .bubble.err { background: var(--err-bg); color: var(--err-ink); align-self: flex-start; }
   .bubble.wait { color: var(--muted); }
+  .c-copy { margin-top: 10px; font: 500 15px var(--font); padding: 6px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--ink); cursor: pointer; }
+  .c-copy:hover { border-color: var(--blue); color: var(--blue); }
   .c-box { display: flex; align-items: flex-end; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 10px 10px 10px 20px; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
   .c-box:focus-within { border-color: var(--blue); }
   .c-box textarea { flex: 1; min-width: 0; border: 0; outline: none; resize: none; background: transparent; color: var(--ink); font: 400 18px/1.6 var(--font); padding: 7px 0; max-height: 9.6em; }
@@ -208,7 +210,7 @@
 (function () {
   'use strict';
   var CONTACT = 'Email：chengmu00082998@gmail.com／LINE：@378vuckv／電話：0952-159-801';
-  var MAX_HISTORY = 10;   // 與 Worker 的上限一致
+  var MAX_HISTORY = 40;   // 與 Worker 的 MAX_MESSAGES 一致（需求整理約要 25～35 則）
   var log = document.getElementById('log');
   var form = document.getElementById('form');
   var input = document.getElementById('q');
@@ -299,6 +301,31 @@
     return el;
   }
 
+  // 需求摘要下方的「複製摘要」按鈕：只複製摘要本身（從「需求摘要」那行開始）
+  function addCopyButton(el, text) {
+    var start = text.indexOf('需求摘要');
+    var summary = start !== -1 ? text.slice(start) : text;
+    var tail = summary.indexOf('【待確認事項】');
+    var end = summary.indexOf('\n\n', tail === -1 ? 0 : tail);   // 摘要後面空一行接的問句不複製
+    if (end !== -1) summary = summary.slice(0, end);
+    summary = summary.trim();
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'c-copy';
+    btn.textContent = '複製摘要';
+    btn.addEventListener('click', function () {
+      var done = function () { btn.textContent = '已複製'; setTimeout(function () { btn.textContent = '複製摘要'; }, 2000); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(summary).then(done, function () { btn.textContent = '請手動選取複製'; });
+      } else {
+        btn.textContent = '請手動選取複製';
+      }
+    });
+    el.appendChild(document.createElement('br'));
+    el.appendChild(btn);
+    log.scrollTop = log.scrollHeight;
+  }
+
   function setBusy(b) {
     busy = b;
     sendBtn.disabled = b;
@@ -330,7 +357,8 @@
     }).then(function (r) {
       wait.remove();
       if (r.ok && r.data.reply) {
-        addBubble('bot', r.data.reply);
+        var botEl = addBubble('bot', r.data.reply);
+        if (r.data.reply.indexOf('【主要功能】') !== -1) addCopyButton(botEl, r.data.reply);
         history.push({ role: 'assistant', content: r.data.reply });
       } else {
         history.pop();   // 這題沒有成功回覆，從對話紀錄拿掉以維持交替
