@@ -1,62 +1,87 @@
 # 澄沐實業有限公司 / CHENGMU INDUSTRIAL CO., LTD.
-# robots.txt — 允許主要搜尋引擎與 AI 爬蟲
+# robots.txt — 允許主要搜尋引擎與 AI 爬蟲；/api/ 是服務助理的後端，不需要被爬
+# 注意：爬蟲只遵守最符合自己名稱的那一組，所以每一組都要各自寫 Disallow: /api/
 
 # ── 一般搜尋引擎 ─────────────────────────────
 User-agent: Googlebot
 Allow: /
+Disallow: /api/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /api/
 
 User-agent: DuckDuckBot
 Allow: /
+Disallow: /api/
 
 # ── AI 爬蟲（明確允許訓練 / 引用） ──────────────
 # OpenAI（ChatGPT 訓練 + 即時 browse）
 User-agent: GPTBot
 Allow: /
+Disallow: /api/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /api/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /api/
 
-# Anthropic（Claude）
+# Anthropic（Claude）：ClaudeBot / Claude-User / Claude-SearchBot 為現行名稱，後兩個舊名保留無害
 User-agent: ClaudeBot
 Allow: /
+Disallow: /api/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /api/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /api/
 
 User-agent: Claude-Web
 Allow: /
+Disallow: /api/
 
 User-agent: anthropic-ai
 Allow: /
+Disallow: /api/
 
 # Perplexity AI
 User-agent: PerplexityBot
 Allow: /
+Disallow: /api/
 
 # Google 生成式 AI（Bard / Gemini / AI Overview）
 User-agent: Google-Extended
 Allow: /
+Disallow: /api/
 
 # Common Crawl（多家 LLM 訓練資料來源）
 User-agent: CCBot
 Allow: /
+Disallow: /api/
 
 # Apple Intelligence
 User-agent: Applebot-Extended
 Allow: /
+Disallow: /api/
 
 # Meta AI
 User-agent: FacebookBot
 Allow: /
+Disallow: /api/
 
 User-agent: Meta-ExternalAgent
 Allow: /
+Disallow: /api/
 
 # ── 預設 ────────────────────────────────
 User-agent: *
 Allow: /
+Disallow: /api/
 
 Sitemap: https://chengmu.com.tw/sitemap.xml

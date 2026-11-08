@@ -101,8 +101,13 @@ if (-not $SkipPages) {
         '404.html',
         'robots.txt',
         'sitemap.xml',
+        '_headers',
+        'favicon.ico',
         'assets\logo.svg',
         'assets\logo.png',
+        'assets\logo-square.png',
+        'assets\apple-touch-icon.png',
+        'assets\og-image.png',
         'assets\line-qr.svg',
         'assets\fonts\SarasaTermTC-Latin-Regular.woff2',
         'assets\fonts\SarasaTermTC-Latin-Bold.woff2'

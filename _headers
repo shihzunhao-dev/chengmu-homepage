@@ -1,0 +1,9 @@
+# Cloudflare Pages 回應標頭（只作用在 Pages 提供的檔案；/api/* 由 Worker 回應，不受影響）
+# - X-Frame-Options：不允許別的網站用 iframe 嵌入（防 clickjacking）
+# - Permissions-Policy：網站用不到相機、麥克風、定位等裝置權限，全部關閉
+# CSP 尚未加：頁面有行內 script/style，需要先盤點來源再決定（fonts.googleapis.com、
+# fonts.gstatic.com、static.cloudflareinsights.com），之後先用 Report-Only 觀察再轉正式。
+# HSTS 在 Cloudflare 儀表板 SSL/TLS → Edge Certificates 設定，不寫在這裡。
+/*
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()

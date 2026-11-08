@@ -1,8 +1,34 @@
 # 澄沐官網 交接文件
 
-最後更新：2026-11-05（清理舊檔後）
+最後更新：2026-11-08（SEO 強化第一批，未部署）
 
 正式網址：https://chengmu.com.tw/ ・ 專案 wiki：`chengmu-homepage`（ProjectWiki）
+
+---
+
+## 0. 進行中：SEO 強化（2026-11-08，從 D:\Temp session 轉來）
+
+來源：seo-specialist 對正式站做的唯讀審查，72/100。主要扣分：可索引文字少、OG 圖是 158×88、沒有安全標頭、JSON-LD 偏薄、版權列沒隱私連結。
+已實測確認：舊檔外洩（README.md、deploy.ps1 等）已解決，正式網域都回 404。
+
+### 第一批：已在本機改好，**尚未 commit、尚未部署**
+- 分享圖 `assets/og-image.png`（1200×630），`twitter:card` 改 `summary_large_image`，補 og:image 寬高與 alt
+- 圖示：`favicon.ico`（根目錄）、`assets/logo-square.png`、`assets/apple-touch-icon.png`；拿掉 SVG 分頁圖示（Google 要方形 favicon），`404.html` 改用 `/favicon.ico`
+- JSON-LD：維持 `Organization`（改 ProfessionalService 會因缺 address 報錯），logo 改方形，補 areaServed、sameAs（LINE）、knowsAbout、makesOffer；用字照 `worker-chat/knowledge.md`，不提 AI
+- `<noscript>` 公司與服務說明，放在 `.card` 外；`robots.txt` 每組加 `Disallow: /api/`；新增 `_headers`（X-Frame-Options、Permissions-Policy）
+- `deploy.ps1` 白名單加 5 個新檔；`sitemap.xml` lastmod 2026-11-08
+- 驗證：JSON-LD 可解析；1920/1440/360 三種尺寸與修改前截圖比對，版面不變（只有時鐘與 QR 卡圓角 6 px 反鋸齒差異）
+
+### 下一步
+1. 使用者看過後跑 `.\deploy.ps1 "seo: 分享圖、圖示、JSON-LD、robots、安全標頭"`，再用 `curl.exe -sI` 確認 `/favicon.ico`、`/assets/og-image.png` 回 200；Facebook Sharing Debugger 按 Scrape Again
+2. 部署確認後更新 ProjectWiki：knownIssue「舊檔外洩」標已解決；OG 圖那條標已解決；devRules 加「robots 每組都要寫 Disallow」「圖示用相對路徑」
+
+### 等使用者決定（不要自行假設）
+- **隱私說明頁**（`/privacy`＋版權列小連結，要加進白名單與 sitemap）：Worker 會存對話內容、IP、國家城市、leads（姓名／聯絡方式／公司／需求摘要），程式裡沒有自動刪除。要問：保存期限寫多久？要不要寫「由 AI 服務商處理」（網站定位刻意不提 AI）？先寫草稿給使用者看，改 `index.html` 版權列前要確認
+- **title 縮短**：現在約 40 字會被截，提案「澄沐實業｜客製化程式系統開發與維護」
+- **JSON-LD**：是否補統一編號、公司登記地址；成立年份 2025 是否正確
+- **Cloudflare 後台**（使用者自己操作）：HSTS、關閉 Email Obfuscation（正式站 email 被改寫成 `[email protected]`）、pages.dev 301 到正式網域
+- **CSP**：這輪沒加；頁面有行內 script/style，要先盤點來源，用 Report-Only 觀察
 
 ---
 
@@ -28,8 +54,12 @@
 ```
 index.html                 首頁（CSS/JS 都在檔內）
 404.html                   找不到頁面
-robots.txt / sitemap.xml   sitemap 只有首頁
+robots.txt / sitemap.xml   sitemap 只有首頁；robots 每個 User-agent 組都要各自寫 Disallow: /api/
+_headers                   Cloudflare Pages 回應標頭（X-Frame-Options、Permissions-Policy；CSP 尚未加）
+favicon.ico                16/32/48 透明底，必須放在網站根目錄
 assets/                    logo.svg、logo.png、line-qr.svg、fonts/
+                           og-image.png（1200×630 分享圖）、logo-square.png（512 透明底，JSON-LD logo 用）、
+                           apple-touch-icon.png（180 米色底，iOS 不支援透明）
 deploy.ps1                 網站部署（git push + 白名單複製到 dist/ 後 wrangler pages deploy）
 worker-chat/               AI 服務助理 Worker
   src/index.js             RULES（回答規則）、notify_engineer、D1 寫入、限流、驗證
@@ -54,6 +84,9 @@ cd D:\chengmu_homepage
 .\deploy.ps1 -SkipGit           # 只推 CF Pages
 ```
 - 只會上傳 `deploy.ps1` 裡 `$SiteFiles` 白名單的檔案；**新增網站檔案要加進白名單**。
+- `index.html` 的圖示 `<link>` 一律用相對路徑（`favicon.ico`、`assets/...`）：GitHub Pages 備援站在 `/chengmu-homepage/` 子路徑下，寫 `/assets/...` 會壞。og:image、JSON-LD 則用完整的 `https://chengmu.com.tw/...`。
+- 分享圖、圖示的產生方式（2026-11-08）：Chrome headless 截 HTML 範本（方格底＋logo＋公司名）成 1200×630，方形 logo 用透明底截 512×512 再以 Pillow 縮出 favicon 與 apple-touch-icon。改 logo 時要重做這幾張。
+- 改了分享圖後，Facebook 要到 Sharing Debugger 按「Scrape Again」，LINE 要等快取過期才會換新預覽。
 - Claude Code 可以代跑（wrangler login 有效時）。`git push` 第一次常失敗、重試就好。
 
 ### AI 服務助理（worker-chat/ 底下任何檔案，含 knowledge.md）

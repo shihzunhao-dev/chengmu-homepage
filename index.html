@@ -9,17 +9,22 @@
 <meta property="og:description" content="客製化程式系統開發・程式系統維護・資訊專業服務。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://chengmu.com.tw/">
-<meta property="og:image" content="https://chengmu.com.tw/assets/logo.png">
+<meta property="og:image" content="https://chengmu.com.tw/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="澄沐實業：客製化程式系統開發／程式系統維護／資訊專業服務">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:site_name" content="澄沐實業有限公司">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="澄沐實業有限公司 / CHENGMU INDUSTRIAL">
 <meta name="twitter:description" content="客製化程式系統開發・程式系統維護・資訊專業服務。">
-<meta name="twitter:image" content="https://chengmu.com.tw/assets/logo.png">
+<meta name="twitter:image" content="https://chengmu.com.tw/assets/og-image.png">
+<meta name="twitter:image:alt" content="澄沐實業：客製化程式系統開發／程式系統維護／資訊專業服務">
 <link rel="canonical" href="https://chengmu.com.tw/">
-<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-<link rel="icon" type="image/png" href="assets/logo.png">
-<link rel="apple-touch-icon" href="assets/logo.png">
+<!-- 圖示用相對路徑：GitHub Pages 備援站在 /chengmu-homepage/ 子路徑下也要能載入 -->
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/logo-square.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <meta name="theme-color" content="#f4f2ec">
 <script>(function () { var h = new Date().getHours(); if (h >= 18 || h < 6) document.documentElement.dataset.theme = 'dark'; })();</script>
 <link rel="preload" href="assets/fonts/SarasaTermTC-Latin-Regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,11 +41,25 @@
       "name": "澄沐實業有限公司",
       "alternateName": "CHENGMU INDUSTRIAL CO., LTD.",
       "url": "https://chengmu.com.tw/",
-      "logo": "https://chengmu.com.tw/assets/logo.png",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://chengmu.com.tw/assets/logo-square.png",
+        "width": 512,
+        "height": 512
+      },
+      "image": "https://chengmu.com.tw/assets/og-image.png",
       "description": "工程師主導的軟體事務所，提供客製化程式系統開發、程式系統維護與資訊專業服務。",
       "foundingDate": "2025",
       "email": "chengmu00082998@gmail.com",
       "telephone": "+886-952-159-801",
+      "areaServed": { "@type": "Country", "name": "Taiwan" },
+      "sameAs": ["https://line.me/R/ti/p/@378vuckv"],
+      "knowsAbout": ["營運管理系統", "倉儲管理系統", "電子簽核", "報表自動化", "系統整合", "舊系統接手維護", "ASP.NET", "SQL Server", "Android 現場作業 App"],
+      "makesOffer": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "客製化程式系統開發", "description": "依照客戶實際的作業流程量身打造系統，從需求訪談、設計、開發到上線部署一次完成；涵蓋營運管理、倉儲管理、電子簽核、現場作業 App、報表產出與系統整合。" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "程式系統維護", "description": "既有系統的除錯、功能增修、效能調整與版本升級；可接手文件不齊、原開發者已離開的舊系統，並做資安補強與主機搬遷。" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "資訊專業服務", "description": "系統架構與技術選型諮詢、數據整理、報表自動化，以及伺服器與部署規劃。" } }
+      ],
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer service",
@@ -205,6 +224,20 @@
     <div class="copy">© 2026 澄沐實業有限公司</div>
   </footer>
 </div>
+
+<!-- 只在瀏覽器關閉 JavaScript 時顯示（也給不執行 JS 的爬蟲讀）；放在 .card 外，不影響首頁版面 -->
+<noscript>
+  <section style="max-width: 1080px; margin: 0 auto; padding: 0 40px 48px; font-size: 16px;">
+    <h2 style="font-size: 18px;">關於澄沐實業</h2>
+    <p>澄沐實業有限公司（CHENGMU INDUSTRIAL CO., LTD.）是 2025 年成立於台灣、由工程師主導的專業資訊服務公司。需求訪談、開發、部署到日後維護，都由同一組工程師負責，不外包、不轉手；原始碼隨系統一起交付。</p>
+    <ul style="padding-left: 1.4em;">
+      <li><strong>客製化程式系統開發</strong>：營運管理、倉儲管理、電子簽核、Android 現場作業 App、Excel／PDF／Word 報表產出與系統整合。</li>
+      <li><strong>程式系統維護</strong>：既有系統除錯、功能增修、版本升級，可接手文件不齊的舊系統，並做資安補強與主機搬遷。</li>
+      <li><strong>資訊專業服務</strong>：系統架構與技術選型諮詢、數據整理、報表自動化、伺服器與部署規劃。</li>
+    </ul>
+    <p>線上服務諮詢需要開啟 JavaScript；也歡迎直接透過上方的 Email、LINE 或電話聯絡我們。</p>
+  </section>
+</noscript>
 
 <script>
 (function () {
