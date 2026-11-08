@@ -25,7 +25,7 @@
 ### 等使用者決定（不要自行假設）
 - **隱私說明頁**（`/privacy`＋版權列小連結，要加進白名單與 sitemap）：Worker 會存對話內容、IP、國家城市、leads（姓名／聯絡方式／公司／需求摘要），程式裡沒有自動刪除。要問：保存期限寫多久？要不要寫「由 AI 服務商處理」（網站定位刻意不提 AI）？先寫草稿給使用者看，改 `index.html` 版權列前要確認
 - **title 縮短**：現在約 40 字會被截，提案「澄沐實業｜客製化程式系統開發與維護」
-- **JSON-LD**：是否補統一編號、公司登記地址；成立年份 2025 是否正確
+- ~~JSON-LD 統編／地址／成立年份~~ 使用者決定（2026-11-08）：不補統一編號與地址，成立年份也不寫（已從 JSON-LD、noscript、knowledge.md 拿掉）
 - ~~Cloudflare 後台~~ **已完成（2026-11-08）**：Email Address Obfuscation 關閉（Security → Settings）；HSTS On、max-age 6 個月、includeSubDomains Off、Preload Off、No-Sniff On；帳號層級 Bulk Redirects（List `chengmu_pages_dev`、Rule `pages_dev_to_apex`）把 `chengmu-homepage.pages.dev` 301 到正式網域，保留路徑與 query，不含子網域（每次部署的預覽網址仍可用）。「Always Use HTTPS」刻意維持 Off：正式網域 http 已會轉 https，打開會連 support 子網域（Tunnel）一起強制轉址
 - **CSP**：這輪沒加；頁面有行內 script/style，要先盤點來源，用 Report-Only 觀察
 
