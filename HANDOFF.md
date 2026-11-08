@@ -1,6 +1,6 @@
 # 澄沐官網 交接文件
 
-最後更新：2026-11-08（SEO 強化第一批，未部署）
+最後更新：2026-11-08（SEO 強化第一批已上線）
 
 正式網址：https://chengmu.com.tw/ ・ 專案 wiki：`chengmu-homepage`（ProjectWiki）
 
@@ -11,7 +11,7 @@
 來源：seo-specialist 對正式站做的唯讀審查，72/100。主要扣分：可索引文字少、OG 圖是 158×88、沒有安全標頭、JSON-LD 偏薄、版權列沒隱私連結。
 已實測確認：舊檔外洩（README.md、deploy.ps1 等）已解決，正式網域都回 404。
 
-### 第一批：已在本機改好，**尚未 commit、尚未部署**
+### 第一批：已上線（2026-11-08，commit `9d3423a`）
 - 分享圖 `assets/og-image.png`（1200×630），`twitter:card` 改 `summary_large_image`，補 og:image 寬高與 alt
 - 圖示：`favicon.ico`（根目錄）、`assets/logo-square.png`、`assets/apple-touch-icon.png`；拿掉 SVG 分頁圖示（Google 要方形 favicon），`404.html` 改用 `/favicon.ico`
 - JSON-LD：維持 `Organization`（改 ProfessionalService 會因缺 address 報錯），logo 改方形，補 areaServed、sameAs（LINE）、knowsAbout、makesOffer；用字照 `worker-chat/knowledge.md`，不提 AI
@@ -19,9 +19,8 @@
 - `deploy.ps1` 白名單加 5 個新檔；`sitemap.xml` lastmod 2026-11-08
 - 驗證：JSON-LD 可解析；1920/1440/360 三種尺寸與修改前截圖比對，版面不變（只有時鐘與 QR 卡圓角 6 px 反鋸齒差異）
 
-### 下一步
-1. 使用者看過後跑 `.\deploy.ps1 "seo: 分享圖、圖示、JSON-LD、robots、安全標頭"`，再用 `curl.exe -sI` 確認 `/favicon.ico`、`/assets/og-image.png` 回 200；Facebook Sharing Debugger 按 Scrape Again
-2. 部署確認後更新 ProjectWiki：knownIssue「舊檔外洩」標已解決；OG 圖那條標已解決；devRules 加「robots 每組都要寫 Disallow」「圖示用相對路徑」
+- 上線後已驗證：新檔都回 200、`X-Frame-Options`／`Permissions-Policy` 有送出、robots 19 組都有 `Disallow: /api/`；ProjectWiki 已更新（wiki `854a66f`）
+- 還沒做：Facebook Sharing Debugger 按 Scrape Again，讓 FB／LINE 換成新分享圖（使用者自己操作）
 
 ### 等使用者決定（不要自行假設）
 - **隱私說明頁**（`/privacy`＋版權列小連結，要加進白名單與 sitemap）：Worker 會存對話內容、IP、國家城市、leads（姓名／聯絡方式／公司／需求摘要），程式裡沒有自動刪除。要問：保存期限寫多久？要不要寫「由 AI 服務商處理」（網站定位刻意不提 AI）？先寫草稿給使用者看，改 `index.html` 版權列前要確認
@@ -140,7 +139,6 @@ dotnet build -c Release
 
 | 項目 | 說明 |
 |---|---|
-| 舊檔快取殘留 | chengmu.com.tw 曾仍回已刪除的舊產品頁、README.md 等（pages.dev 與預覽網址正確 404，zone 清快取無效）。待過期後再查；還在就加 Worker 路由強制 404 |
 | 隱私告知 | 輸入框下的「對話與 IP 會保存」已依使用者要求拿掉；個資法上建議之後在版權列放「隱私說明」連結 |
 | Resend API key | 舊聯絡表單用的，Worker 已刪（2026-11-05），可到 Resend 後台撤銷 |
 | 自有產品 | 是否讓 AI 介紹 PCC Tender Watch、家庭存摺、預算系統，使用者尚未決定（目前不介紹） |
