@@ -23,7 +23,7 @@
 - 還沒做：Facebook Sharing Debugger 按 Scrape Again，讓 FB／LINE 換成新分享圖（使用者自己操作）
 
 ### 等使用者決定（不要自行假設）
-- ~~隱私說明頁~~ **已完成（2026-11-08，待部署）**：`privacy.html`（版權列小連結、sitemap、白名單都已加）；保存期限一般對話 1 年、有轉交的 3 年、成為客戶依合約；不提 AI，只寫「委託雲端服務商處理與儲存」。Worker 加每天台灣 03:00 的 Cron（`purgeExpired`），期限常數 `KEEP_CHAT_DAYS`／`KEEP_LEAD_YEARS` 改了要同步改 privacy.html。Gmail 裡的通知信不會自動刪，要自己管理
+- ~~隱私說明頁~~ **已上線（2026-11-08）**：`privacy.html`（版權列小連結、sitemap、白名單都已加）；保存期限一般對話 1 年、有轉交的 3 年、成為客戶依合約；不提 AI，只寫「委託雲端服務商處理與儲存」。Worker 加每天台灣 03:00 的 Cron（`purgeExpired`），期限常數 `KEEP_CHAT_DAYS`／`KEEP_LEAD_YEARS` 改了要同步改 privacy.html。Gmail 裡的通知信不會自動刪，要自己管理
 - **title 縮短**：現在約 40 字會被截，提案「澄沐實業｜客製化程式系統開發與維護」
 - ~~JSON-LD 統編／地址／成立年份~~ 使用者決定（2026-11-08）：不補統一編號與地址，成立年份也不寫（已從 JSON-LD、noscript、knowledge.md 拿掉）
 - ~~Cloudflare 後台~~ **已完成（2026-11-08）**：Email Address Obfuscation 關閉（Security → Settings）；HSTS On、max-age 6 個月、includeSubDomains Off、Preload Off、No-Sniff On；帳號層級 Bulk Redirects（List `chengmu_pages_dev`、Rule `pages_dev_to_apex`）把 `chengmu-homepage.pages.dev` 301 到正式網域，保留路徑與 query，不含子網域（每次部署的預覽網址仍可用）。「Always Use HTTPS」刻意維持 Off：正式網域 http 已會轉 https，打開會連 support 子網域（Tunnel）一起強制轉址
