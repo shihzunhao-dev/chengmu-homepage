@@ -17,7 +17,7 @@ const RULES = `你是「澄沐實業有限公司」官網上的服務助理，�
 回答規則：
 1. 一律使用繁體中文，語氣親切專業，稱呼對方一律用「您」。回答要簡短，通常 2 到 5 句；需要條列時最多 5 點（第 11 條的需求摘要不受這個限制）。不要使用 Markdown 語法（標題、粗體、表格、程式碼區塊），畫面只顯示純文字。
 2. 只根據下方「服務說明」回答，範圍是三項服務（客製化程式系統開發、程式系統維護、資訊專業服務）與合作流程。對方描述具體需求時，先直接回答能不能做、屬於哪一項服務，再舉服務說明裡相關的系統類型或做法；不要每次都把三項服務從頭介紹一遍。
-3. 不提供任何客戶名稱、案件名稱、人名、合作對象或可識別個人或單位的資訊。被問到時，禮貌說明基於保密無法提供，再改說明服務類型。
+3. 不提供任何客戶名稱、案件名稱、人名、合作對象或可識別個人或單位的資訊（澄沐自己的公司名稱、統一編號與成立年份不在此限，依服務說明回答）。被問到時，禮貌說明基於保密無法提供，再改說明服務類型。
 4. 不提供任何報價金額、工時或天數估計。被問到時，說明需要工程師評估，並依第 10 條協助轉交工程師。
 5. 與公司服務無關的問題（例如一般知識、寫程式作業、其他公司的產品），用一句話說明你只能回答澄沐的服務，再邀請對方提問。
 6. 服務說明裡沒有的內容不要自行推測或編造；不確定時請對方直接聯絡工程師。
@@ -183,7 +183,36 @@ async function saveTurn(env, rec) {
 
 const CONV_ID_RE = /^[A-Za-z0-9-]{8,64}$/;
 
+// 保存期限（與官網 privacy.html 寫的一致，改這裡要同步改隱私說明）：
+// 一般對話 1 年；有轉交工程師（leads 有紀錄）的對話與轉交紀錄 3 年。
+const KEEP_CHAT_DAYS = 365;
+const KEEP_LEAD_YEARS = 3;
+
+// 每天由 Cron Trigger 執行一次（wrangler.toml [triggers]），刪除超過保存期限的紀錄
+async function purgeExpired(env) {
+  if (!env.DB) return { skipped: true };
+  // created_at 存的是 toISOString()（YYYY-MM-DDTHH:MM:SS.sssZ），用同格式比較字串
+  const iso = (modifier) => `strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '${modifier}')`;
+  const chatCut = iso(`-${KEEP_CHAT_DAYS} days`);
+  const leadCut = iso(`-${KEEP_LEAD_YEARS} years`);
+  const results = await env.DB.batch([
+    // 一般對話：超過 1 年，且不屬於任何轉交紀錄
+    env.DB.prepare(`DELETE FROM chat_messages WHERE created_at < ${chatCut} AND conversation_id NOT IN (SELECT lead_key FROM leads)`),
+    // 有轉交的對話與轉交紀錄：超過 3 年
+    env.DB.prepare(`DELETE FROM chat_messages WHERE created_at < ${leadCut}`),
+    env.DB.prepare(`DELETE FROM leads WHERE created_at < ${leadCut}`),
+  ]);
+  const n = results.map((r) => (r.meta && r.meta.changes) || 0);
+  const summary = { chats: n[0], leadChats: n[1], leads: n[2] };
+  console.log("purgeExpired", JSON.stringify(summary));
+  return summary;
+}
+
 export default {
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(purgeExpired(env).catch((err) => console.error("purgeExpired failed", err && err.message)));
+  },
+
   async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
     if (pathname !== "/api/chat") return json(404, { error: "not found" });

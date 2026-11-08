@@ -35,4 +35,8 @@ database_id = "33bab8c1-cd58-48a4-94c6-4754e13fe36f"
 name = "EMAIL"
 destination_address = "chengmu00082998@gmail.com"
 
+# 每天 UTC 19:00（台灣 03:00）清除超過保存期限的對話紀錄（src/index.js purgeExpired；期限見 privacy.html）
+[triggers]
+crons = ["0 19 * * *"]
+
 # 機密：ANTHROPIC_API_KEY 用 `wrangler secret put ANTHROPIC_API_KEY` 設定，不寫在這裡
