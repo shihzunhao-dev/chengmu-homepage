@@ -584,10 +584,19 @@
     page.classList.toggle('open', isOpen);
     page.setAttribute('aria-hidden', String(!isOpen));
     if (isOpen) {
-      if (!video.getAttribute('src')) video.src = video.dataset.src;
+      if (!video.getAttribute('src')) { video.src = video.dataset.src; video.volume = 0.5; }   // 預設一半音量
       var p = video.play();
-      // 瀏覽器不允許有聲自動播放時，改成靜音播放，訪客可自己開聲音
-      if (p && p.catch) p.catch(function () { video.muted = true; video.play().catch(function () {}); });
+      // 瀏覽器不允許有聲自動播放時（例如只滾了滾輪、還沒點過頁面），先靜音播放；
+      // 訪客在影片頁第一次點擊或按鍵時自動打開聲音
+      if (p && p.catch) p.catch(function () {
+        video.muted = true;
+        video.play().catch(function () {});
+        var unmute = function () {
+          video.muted = false;
+          ['pointerdown', 'keydown', 'touchend'].forEach(function (t) { page.removeEventListener(t, unmute); });
+        };
+        ['pointerdown', 'keydown', 'touchend'].forEach(function (t) { page.addEventListener(t, unmute); });
+      });
     } else {
       video.pause();
     }
