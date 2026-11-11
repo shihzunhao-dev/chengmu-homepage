@@ -59,6 +59,13 @@ if (-not $SkipGit) {
     $status = git status --porcelain 2>$null
     if (-not $status) {
         Write-Warn "沒有變更，跳過 git commit"
+        # 之前 commit 成功但 push 沒做到時，補推上去
+        $ahead = [int](git rev-list --count '@{u}..HEAD' 2>$null)
+        if ($ahead -gt 0) {
+            $out = git push 2>&1
+            if ($LASTEXITCODE -ne 0) { Write-Err "git push 失敗"; $out | ForEach-Object { Write-Host "    $_" }; exit 1 }
+            Write-Ok "補推 $ahead 個尚未 push 的 commit"
+        }
         $gitDone = $true
     } else {
         # 互動式取得 commit message（如果沒給）
@@ -71,15 +78,17 @@ if (-not $SkipGit) {
         }
 
         # 用 $LASTEXITCODE 而非 try/catch（git 的 warning 不是 exception）
-        git add . 2>&1 | Out-Null
-        if ($LASTEXITCODE -ne 0) { Write-Err "git add 失敗"; exit 1 }
+        # 失敗時把 git 的原始訊息印出來，才知道原因
+        $out = git add . 2>&1
+        if ($LASTEXITCODE -ne 0) { Write-Err "git add 失敗"; $out | ForEach-Object { Write-Host "    $_" }; exit 1 }
 
-        git commit -m $Message 2>&1 | Out-Null
-        if ($LASTEXITCODE -ne 0) { Write-Err "git commit 失敗"; exit 1 }
+        $out = git commit -m $Message 2>&1
+        if ($LASTEXITCODE -ne 0) { Write-Err "git commit 失敗"; $out | ForEach-Object { Write-Host "    $_" }; exit 1 }
 
-        git push 2>&1 | Out-Null
+        $out = git push 2>&1
         if ($LASTEXITCODE -ne 0) {
             Write-Err "git push 失敗"
+            $out | ForEach-Object { Write-Host "    $_" }
             $gitDone = $false
         } else {
             Write-Ok "git push 完成 → $Message"
