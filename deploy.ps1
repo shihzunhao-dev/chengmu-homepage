@@ -110,6 +110,8 @@ if (-not $SkipPages) {
         'assets\apple-touch-icon.png',
         'assets\og-image.png',
         'assets\line-qr.svg',
+        'assets\chengmu-film.mp4',
+        'assets\chengmu-film-poster.jpg',
         'assets\fonts\SarasaTermTC-Latin-Regular.woff2',
         'assets\fonts\SarasaTermTC-Latin-Bold.woff2'
     )
