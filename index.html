@@ -197,6 +197,8 @@
     .bottom .qr { display: none; }
     .bubble { max-width: 92%; }
     .cad-cursor { display: none; }
+    .film { padding: 20px; }
+    .film video { width: 100%; border-radius: 8px; }
     .clock { font-size: 13px; letter-spacing: .04em; }
   }
 </style>
@@ -626,6 +628,24 @@
     else setOpen(false);
   });
   window.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && isOpen) setOpen(false); });
+
+  // 手機：頁面已經在最底時再往上滑一次打開；影片頁上往上或往下滑回首頁
+  var touch = null;
+  window.addEventListener('touchstart', function (ev) {
+    if (ev.touches.length !== 1) { touch = null; return; }
+    var t = ev.touches[0];
+    if (!isOpen && ev.target.closest && ev.target.closest('a, button, input, textarea, .chat')) { touch = null; return; }
+    touch = { x: t.clientX, y: t.clientY, bottom: atBottom() };
+  }, { passive: true });
+  page.addEventListener('touchmove', function (ev) { if (isOpen) ev.preventDefault(); }, { passive: false });  // 影片頁開著時背後首頁不跟著捲
+  window.addEventListener('touchend', function (ev) {
+    if (!touch) return;
+    var t = ev.changedTouches[0], dx = t.clientX - touch.x, dy = t.clientY - touch.y, start = touch;
+    touch = null;
+    if (Math.abs(dy) < 60 || Math.abs(dy) < Math.abs(dx) * 1.5) return;
+    if (!isOpen) { if (dy < 0 && start.bottom) setOpen(true); }
+    else setOpen(false);
+  });
 })();
 </script>
 <!-- Cloudflare Web Analytics -->
