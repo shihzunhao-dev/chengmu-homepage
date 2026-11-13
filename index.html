@@ -184,6 +184,13 @@
   @keyframes play-pulse { 0% { box-shadow: 0 0 0 0 rgba(15, 112, 170, .5); } 70%, 100% { box-shadow: 0 0 0 18px rgba(15, 112, 170, 0); } }
   @media (prefers-reduced-motion: reduce) { .film-play { animation: none; } }
   @media (prefers-reduced-motion: reduce) { .film, .film.open { transition: none; } }
+  /* 首頁底部的小箭頭：提示往下有影片，輕輕跳動；點了也會打開影片頁 */
+  .film-hint { position: fixed; left: 50%; bottom: 12px; z-index: 30; width: 36px; height: 28px; margin-left: -18px; padding: 0; border: 0; background: none;
+    color: var(--muted); opacity: .7; cursor: pointer; display: grid; place-items: center; animation: hint-bob 2.4s ease-in-out infinite; }
+  .film-hint:hover { color: var(--blue); opacity: 1; }
+  .film-open .film-hint { display: none; }
+  @keyframes hint-bob { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(6px); } }
+  @media (prefers-reduced-motion: reduce) { .film-hint { animation: none; } }
 
   @media (max-width: 720px) {
     .card { padding: 24px 20px 40px; }
@@ -244,6 +251,10 @@
     <div class="copy">© 2026 澄沐實業有限公司<span class="sep">・</span><a href="privacy">隱私說明</a></div>
   </footer>
 </div>
+
+<button type="button" class="film-hint" id="filmHint" aria-label="觀看形象影片">
+  <svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 2l9 9 9-9"/></svg>
+</button>
 
 <section class="film" id="film" aria-label="澄沐實業形象影片" aria-hidden="true">
   <div class="film-box">
@@ -594,6 +605,7 @@
   // 不管從播放鍵或播放列開始播放，播放鍵都收起來
   video.addEventListener('play', function () { playBtn.hidden = true; });
   playBtn.addEventListener('click', function () { video.play().catch(function () {}); });
+  document.getElementById('filmHint').addEventListener('click', function () { setOpen(true); });   // 點擊＝真人操作，會直接有聲播放
   var isOpen = false, until = 0, lastWheel = 0, wheelLocked = false;
 
   function setOpen(want) {
@@ -603,6 +615,7 @@
     wheelLocked = true;                       // 同一次滾動（觸控板慣性）不會馬上又關掉
     page.classList.toggle('open', isOpen);
     page.setAttribute('aria-hidden', String(!isOpen));
+    document.body.classList.toggle('film-open', isOpen);
     if (isOpen) {
       if (!video.getAttribute('src')) { video.src = video.dataset.src; video.volume = 0.5; }   // 預設一半音量
       var p = video.play();
