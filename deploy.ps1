@@ -112,6 +112,7 @@ if (-not $SkipPages) {
         'robots.txt',
         'sitemap.xml',
         '_headers',
+        '_redirects',
         'favicon.ico',
         'assets\logo.svg',
         'assets\logo.png',
@@ -121,6 +122,8 @@ if (-not $SkipPages) {
         'assets\line-qr.svg',
         'assets\chengmu-film.mp4',
         'assets\chengmu-film-poster.jpg',
+        'assets\chengmu-film-3d.mp4',
+        'assets\chengmu-film-3d-poster.jpg',
         'assets\fonts\SarasaTermTC-Latin-Regular.woff2',
         'assets\fonts\SarasaTermTC-Latin-Bold.woff2'
     )

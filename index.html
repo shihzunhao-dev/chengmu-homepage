@@ -258,7 +258,10 @@
 
 <section class="film" id="film" aria-label="澄沐實業形象影片" aria-hidden="true">
   <div class="film-box">
-    <video controls playsinline preload="none" poster="assets/chengmu-film-poster.jpg" data-src="assets/chengmu-film.mp4?v=20261113"></video>
+    <!-- 白天（米色系）播 2D 版、晚上（深色系，18:00–06:00）播 3D 版；換影片時兩個 ?v= 版本號要一起改 -->
+    <video controls playsinline preload="none" poster="assets/chengmu-film-poster.jpg"
+      data-src="assets/chengmu-film.mp4?v=20261113" data-poster="assets/chengmu-film-poster.jpg"
+      data-src-dark="assets/chengmu-film-3d.mp4?v=20261117" data-poster-dark="assets/chengmu-film-3d-poster.jpg"></video>
     <button type="button" class="film-play" id="filmPlay" aria-label="播放影片" hidden>
       <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
     </button>
@@ -617,7 +620,7 @@
     page.setAttribute('aria-hidden', String(!isOpen));
     document.body.classList.toggle('film-open', isOpen);
     if (isOpen) {
-      if (!video.getAttribute('src')) { video.src = video.dataset.src; video.volume = 0.5; }   // 預設一半音量
+      pickFilm();
       var p = video.play();
       // 瀏覽器不允許有聲自動播放時（例如只滾了滾輪、還沒點過頁面），停在封面、顯示播放鍵
       if (p && p.catch) p.catch(function () { playBtn.hidden = false; });
@@ -625,6 +628,17 @@
       video.pause();
     }
   }
+  // 依目前配色選影片：白天 2D、晚上 3D。每次打開影片頁都檢查一次，跨過 18:00／06:00 後會自動換片
+  function pickFilm() {
+    var dark = document.documentElement.dataset.theme === 'dark';
+    var src = dark ? video.dataset.srcDark : video.dataset.src;
+    if (video.dataset.current === src) return;
+    video.poster = dark ? video.dataset.posterDark : video.dataset.poster;
+    video.src = src;
+    video.dataset.current = src;
+    video.volume = 0.5;                        // 預設一半音量
+  }
+  if (document.documentElement.dataset.theme === 'dark') video.poster = video.dataset.posterDark;
   function atBottom() {
     return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
   }
