@@ -108,6 +108,8 @@ if (-not $SkipPages) {
     $SiteFiles = @(
         'index.html',
         'privacy.html',
+        'film.html',
+        'film-3d.html',
         '404.html',
         'robots.txt',
         'sitemap.xml',
