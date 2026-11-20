@@ -52,6 +52,11 @@ $startedAt = Get-Date
 $gitDone = $false
 $pagesDone = $false
 
+# ── Step 0: 由中文首頁產生英文版 en/index.html（對照表對不上就停止，不部署）──
+Write-Step "Step 0  產生英文版首頁 en/index.html"
+node build-en.mjs
+if ($LASTEXITCODE -ne 0) { Write-Err "英文版產生失敗：請依上方訊息更新 build-en.mjs 的對照表"; exit 1 }
+
 # ── Step 1: Git ───────────────────────────────────────
 if (-not $SkipGit) {
     Write-Step "Step 1/2  Git push → GitHub Pages"
@@ -110,6 +115,10 @@ if (-not $SkipPages) {
         'privacy.html',
         'film.html',
         'film-3d.html',
+        'en\index.html',
+        'en\film.html',
+        'en\film-3d.html',
+        'en\privacy.html',
         '404.html',
         'robots.txt',
         'sitemap.xml',

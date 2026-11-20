@@ -43,6 +43,39 @@ const RULES = `你是「澄沐實業有限公司」官網上的服務助理，�
    (5) 對方確認摘要（或修改完）後，依第 10 條請對方留下稱呼與聯絡方式。呼叫 notify_engineer 時，summary 放確認後的完整需求摘要，company 填對方的學校、公司或單位。
    (6) 整理過程中不推薦特定技術、軟體或產品，不承諾一定做得到某個細節，不估價、不估時程（第 4 條照樣適用）。`;
 
+// 英文版官網（/en/）送來的請求帶 X-Site-Lang: en：在 RULES 後面加上這段，改用英文回答與英文摘要格式。
+// 放在快取的 RULES＋服務說明之後，不影響中文版的提示快取。
+const CONTACT_EN = "Email: chengmu00082998@gmail.com / LINE: @378vuckv / Phone: +886-952-159-801";
+const RULES_EN = `# Language override (English website)
+The visitor is using the English version of the website. Rule 1's language requirement is replaced: always reply in natural, professional English, politely and concisely (usually 2 to 5 sentences). All other rules still apply; translate the facts in the service description into English yourself. When you must give contact details, use: ${CONTACT_EN}
+For option lists in rule 11 use (1) (2) (3). When rule 11 asks for the requirements summary, use this English format instead (plain text, items start with "•"):
+Requirements Summary
+[Purpose] one sentence
+[Users]
+[Key Features]
+[Data]
+[Environment]
+[Current Situation & Pain Points]
+[Timeline]
+[Open Questions]
+After a successful notify_engineer call, tell the visitor "Your request has been passed to our engineer, who will contact you soon." For notify_engineer, keep the service field as one of its enum values and write the summary in English.`;
+
+// 給英文版訪客的錯誤與固定訊息（以中文原句為鍵）
+const EN_MSG = {
+  "請使用 POST。": "Please use POST.",
+  "來源不被允許。": "Origin not allowed.",
+  "提問太頻繁了，請稍候一分鐘再試。": "Too many questions in a short time. Please wait a minute and try again.",
+  "請求格式不正確。": "Invalid request format.",
+  "對話內容是空的。": "The conversation is empty.",
+  "對話太長了，請重新整理頁面後再問。": "The conversation is too long. Please reload the page and ask again.",
+  "對話格式不正確。": "Invalid conversation format.",
+  "訊息不能是空的。": "The message cannot be empty.",
+  [`每則訊息請在 ${MAX_CHARS} 字以內。`]: `Please keep each message within ${MAX_CHARS} characters.`,
+  "目前詢問的人比較多，請稍候再試。": "We are receiving many questions right now. Please try again shortly.",
+  [`服務暫時無法使用，請改用以下方式聯絡：${CONTACT}`]: `The service is temporarily unavailable. Please contact us directly: ${CONTACT_EN}`,
+  "已轉交工程師，會盡快與您聯繫，謝謝您。": "Your request has been passed to our engineer, who will contact you soon. Thank you.",
+};
+
 const OWNER_EMAIL = "chengmu00082998@gmail.com";
 const SENDER_EMAIL = "assistant@chengmu.com.tw";
 
@@ -110,6 +143,7 @@ async function notifyEngineer(env, turn, input, transcript) {
     `服務類別：${lead.service}`,
     `來源：IP ${turn.ip || "未記錄"}（${[turn.country, turn.city].filter(Boolean).join(" ") || "地區不明"}）`,
     `對話編號：${turn.conversationId}`,
+    ...(turn.lang === "en" ? ["語言：英文版官網（客人以英文溝通）"] : []),
     "",
     "【需求整理】",
     lead.summary,
@@ -121,7 +155,7 @@ async function notifyEngineer(env, turn, input, transcript) {
     await env.EMAIL.send({
       to: OWNER_EMAIL,
       from: SENDER_EMAIL,
-      subject: `${count > 1 ? `[官網詢問・補充 ${count - 1}]` : "[官網詢問]"} ${lead.name}｜${lead.service}`,
+      subject: `${count > 1 ? `[官網詢問・補充 ${count - 1}]` : "[官網詢問]"}${turn.lang === "en" ? "[EN]" : ""} ${lead.name}｜${lead.service}`,
       text: lines.join("\n"),
     });
     return "成功：已寄信通知工程師。";
@@ -138,6 +172,7 @@ async function notifyEngineer(env, turn, input, transcript) {
 }
 
 const REFUSAL_REPLY = `抱歉，這個問題我無法回答。若想了解澄沐的服務，歡迎直接聯絡我們：${CONTACT}`;
+EN_MSG[REFUSAL_REPLY] = `Sorry, I can't answer that question. To learn about ChengMu's services, please contact us directly: ${CONTACT_EN}`;
 
 function json(status, body, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
@@ -215,29 +250,33 @@ export default {
 
   async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
+    // 英文版官網送 X-Site-Lang: en；回給訪客的訊息依此切換語言
+    const en = (request.headers.get("X-Site-Lang") || "").toLowerCase() === "en";
+    const t = (zh) => (en && EN_MSG[zh]) || zh;
     if (pathname !== "/api/chat") return json(404, { error: "not found" });
-    if (request.method !== "POST") return json(405, { error: "請使用 POST。" }, { allow: "POST" });
+    if (request.method !== "POST") return json(405, { error: t("請使用 POST。") }, { allow: "POST" });
 
     const origin = request.headers.get("Origin");
-    if (!ALLOWED_ORIGINS.includes(origin)) return json(403, { error: "來源不被允許。" });
+    if (!ALLOWED_ORIGINS.includes(origin)) return json(403, { error: t("來源不被允許。") });
 
     // 軟性限流：每個 IP 每分鐘最多 RATE_LIMIT 次（各機房分開計算，屬於近似值）
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
     const { success } = await env.RATE_LIMITER.limit({ key: ip });
-    if (!success) return json(429, { error: "提問太頻繁了，請稍候一分鐘再試。" });
+    if (!success) return json(429, { error: t("提問太頻繁了，請稍候一分鐘再試。") });
 
     let body;
     try {
       body = await request.json();
     } catch {
-      return json(400, { error: "請求格式不正確。" });
+      return json(400, { error: t("請求格式不正確。") });
     }
     const messages = body && body.messages;
     const invalid = validateMessages(messages);
-    if (invalid) return json(400, { error: invalid });
+    if (invalid) return json(400, { error: t(invalid) });
 
     const cf = request.cf || {};
     const turn = {
+      lang: en ? "en" : "zh",
       conversationId: CONV_ID_RE.test(body.conversationId || "") ? body.conversationId : "unknown",
       question: messages[messages.length - 1].content.trim(),
       country: cf.country || null,
@@ -250,7 +289,7 @@ export default {
     if (!env.ANTHROPIC_API_KEY) {
       console.error("ANTHROPIC_API_KEY is not set");
       log("error", "ANTHROPIC_API_KEY 未設定");
-      return json(500, { error: `服務暫時無法使用，請改用以下方式聯絡：${CONTACT}` });
+      return json(500, { error: t(`服務暫時無法使用，請改用以下方式聯絡：${CONTACT}`) });
     }
 
     const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 30_000 });
@@ -272,6 +311,7 @@ export default {
           system: [
             { type: "text", text: RULES },
             { type: "text", text: `# 服務說明\n\n${KNOWLEDGE}`, cache_control: { type: "ephemeral" } },
+            ...(en ? [{ type: "text", text: RULES_EN }] : []),
           ],
           tools: [NOTIFY_TOOL],
           messages: convo,
@@ -299,34 +339,34 @@ export default {
 
       if (response.stop_reason === "refusal") {
         log("assistant", `[refusal] ${REFUSAL_REPLY}`, usage);
-        return json(200, { reply: REFUSAL_REPLY }, usageHeader);
+        return json(200, { reply: t(REFUSAL_REPLY) }, usageHeader);
       }
 
       const reply = response.content
         .filter((b) => b.type === "text")
         .map((b) => b.text)
         .join("")
-        .trim() || (notified.startsWith("成功") ? "已轉交工程師，會盡快與您聯繫，謝謝您。" : REFUSAL_REPLY);
+        .trim() || t(notified.startsWith("成功") ? "已轉交工程師，會盡快與您聯繫，謝謝您。" : REFUSAL_REPLY);
       log("assistant", reply, usage);
       return json(200, { reply }, usageHeader);
     } catch (err) {
       if (err instanceof Anthropic.RateLimitError) {
         log("error", "Anthropic 429 rate limit");
-        return json(429, { error: "目前詢問的人比較多，請稍候再試。" });
+        return json(429, { error: t("目前詢問的人比較多，請稍候再試。") });
       }
       if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
         console.error("Anthropic auth error", err.status);
         log("error", `Anthropic auth error ${err.status}`);
-        return json(500, { error: `服務暫時無法使用，請改用以下方式聯絡：${CONTACT}` });
+        return json(500, { error: t(`服務暫時無法使用，請改用以下方式聯絡：${CONTACT}`) });
       }
       if (err instanceof Anthropic.APIError) {
         console.error("Anthropic API error", err.status, err.message);
         log("error", `Anthropic API error ${err.status}`);
-        return json(502, { error: `服務暫時無法使用，請改用以下方式聯絡：${CONTACT}` });
+        return json(502, { error: t(`服務暫時無法使用，請改用以下方式聯絡：${CONTACT}`) });
       }
       console.error("Unexpected error", err && err.message);
       log("error", `Unexpected error: ${err && err.message}`);
-      return json(500, { error: `服務暫時無法使用，請改用以下方式聯絡：${CONTACT}` });
+      return json(500, { error: t(`服務暫時無法使用，請改用以下方式聯絡：${CONTACT}`) });
     }
   },
 };

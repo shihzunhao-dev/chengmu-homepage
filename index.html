@@ -21,6 +21,22 @@
 <meta name="twitter:image" content="https://chengmu.com.tw/assets/og-image.png">
 <meta name="twitter:image:alt" content="澄沐實業：客製化程式系統開發／程式系統維護／資訊專業服務">
 <link rel="canonical" href="https://chengmu.com.tw/">
+<link rel="alternate" hreflang="zh-Hant" href="https://chengmu.com.tw/">
+<link rel="alternate" hreflang="en" href="https://chengmu.com.tw/en/">
+<link rel="alternate" hreflang="x-default" href="https://chengmu.com.tw/">
+<!--lang-auto-->
+<!-- 語言自動判斷（只在中文首頁）：訪客按過切換鈕就照他的選擇；沒選過時，瀏覽器語言沒有中文就轉到英文版。
+     搜尋引擎爬蟲不轉址，中英文版各自被收錄。英文版由 build-en.mjs 產生時會拿掉這段。 -->
+<script>(function () {
+  try {
+    var s = localStorage.getItem('cm-lang');
+    var bot = /bot|crawl|spider|slurp|lighthouse|preview/i.test(navigator.userAgent);
+    var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+    var zh = langs.some(function (l) { return /^zh/i.test(l); });
+    if (s === 'en' || (!s && !bot && !zh)) location.replace('en/' + location.search);
+  } catch (e) { /* 無法讀取設定時維持中文 */ }
+})();</script>
+<!--/lang-auto-->
 <!-- 圖示用相對路徑：GitHub Pages 備援站在 /chengmu-homepage/ 子路徑下也要能載入 -->
 <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" type="image/png" sizes="512x512" href="assets/logo-square.png">
@@ -31,7 +47,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-<script type="application/ld+json">
+<!--ld--><script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@graph": [
@@ -78,7 +94,7 @@
     }
   ]
 }
-</script>
+</script><!--/ld-->
 <style>
   /* 更紗英數：從 Sarasa Term TC 裁出英數與常用符號，只用在這些字元；中文交給思源黑體（Noto Sans TC） */
   @font-face { font-family: "Sarasa Latin"; src: url("assets/fonts/SarasaTermTC-Latin-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap;
@@ -130,6 +146,10 @@
 
   .card { min-height: 100vh; max-width: 1080px; margin: 0 auto; padding: 48px 40px 120px; display: grid; grid-template-rows: auto 1fr auto auto; }
   .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 15px; font-weight: 500; color: var(--muted); letter-spacing: .1em; }
+  /* 語言切換：時鐘左邊的小膠囊，EN／中文 */
+  .top-r { display: flex; align-items: center; gap: 18px; flex: none; }
+  .lang { font: 700 14px var(--font); letter-spacing: .08em; color: var(--muted); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
+  .lang:hover { color: var(--blue); border-color: var(--blue); }
 
   .center { display: grid; grid-template-columns: auto 1fr; gap: 56px; align-items: center; padding: 56px 0; }
   .logo { width: 210px; height: auto; display: block; }
@@ -218,12 +238,14 @@
     .film-play { width: 72px; height: 72px; margin: -36px 0 0 -36px; }
     .film-play svg { width: 30px; height: 30px; }
     .clock { font-size: 13px; letter-spacing: .04em; }
+    .top-r { gap: 10px; }
+    .lang { font-size: 12px; padding: 2px 9px; }
   }
 </style>
 </head>
 <body>
 <div class="card">
-  <div class="top"><span>CHENGMU INDUSTRIAL CO., LTD.</span><span class="clock" id="clock" aria-hidden="true"></span></div>
+  <div class="top"><span>CHENGMU INDUSTRIAL CO., LTD.</span><span class="top-r"><a class="lang" href="en/" hreflang="en" lang="en" data-lang="en">EN</a><span class="clock" id="clock" aria-hidden="true"></span></span></div>
 
   <main class="center">
     <img class="logo" src="assets/logo.svg" alt="澄沐實業 logo" width="466" height="277">
@@ -269,7 +291,7 @@
 </section>
 
 <!-- 只在瀏覽器關閉 JavaScript 時顯示（也給不執行 JS 的爬蟲讀）；放在 .card 外，不影響首頁版面 -->
-<noscript>
+<!--noscript--><noscript>
   <section style="max-width: 1080px; margin: 0 auto; padding: 0 40px 48px; font-size: 16px;">
     <h2 style="font-size: 18px;">關於澄沐實業</h2>
     <p>澄沐實業有限公司（CHENGMU INDUSTRIAL CO., LTD.）是位於台灣、由工程師主導的專業資訊服務公司。需求訪談、開發、部署到日後維護，都由同一組工程師負責，不外包、不轉手；原始碼隨系統一起交付。</p>
@@ -280,13 +302,22 @@
     </ul>
     <p>線上服務諮詢需要開啟 JavaScript；也歡迎直接透過上方的 Email、LINE 或電話聯絡我們。</p>
   </section>
-</noscript>
+</noscript><!--/noscript-->
 
 <script>
 (function () {
   'use strict';
   var CONTACT = 'Email：chengmu00082998@gmail.com／LINE：@378vuckv／電話：0952-159-801';
   var MAX_HISTORY = 40;   // 與 Worker 的 MAX_MESSAGES 一致（需求整理約要 25～35 則）
+  // 這一頁的語言（英文版由 build-en.mjs 產生，<html lang="en">）；Worker 依此用中文或英文回答
+  var SITE_LANG = /^en/i.test(document.documentElement.lang) ? 'en' : 'zh';
+  // 需求摘要的標記字，用來判斷要不要顯示「複製摘要」與複製範圍（英文版由 build-en.mjs 換成英文標記）
+  var SUMMARY_HEAD = '需求摘要', SUMMARY_KEY = '【主要功能】', SUMMARY_TAIL = '【待確認事項】';
+
+  // 語言切換鈕：記住訪客的選擇，之後進首頁不再自動判斷
+  document.querySelectorAll('[data-lang]').forEach(function (a) {
+    a.addEventListener('click', function () { try { localStorage.setItem('cm-lang', a.dataset.lang); } catch (e) { /* 無法記住就算了 */ } });
+  });
   var log = document.getElementById('log');
   var form = document.getElementById('form');
   var input = document.getElementById('q');
@@ -379,9 +410,9 @@
 
   // 需求摘要下方的「複製摘要」按鈕：只複製摘要本身（從「需求摘要」那行開始）
   function addCopyButton(el, text) {
-    var start = text.indexOf('需求摘要');
+    var start = text.indexOf(SUMMARY_HEAD);
     var summary = start !== -1 ? text.slice(start) : text;
-    var tail = summary.indexOf('【待確認事項】');
+    var tail = summary.indexOf(SUMMARY_TAIL);
     var end = summary.indexOf('\n\n', tail === -1 ? 0 : tail);   // 摘要後面空一行接的問句不複製
     if (end !== -1) summary = summary.slice(0, end);
     summary = summary.trim();
@@ -424,7 +455,7 @@
 
     fetch('/api/chat', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'x-site-lang': SITE_LANG },
       body: JSON.stringify({ conversationId: conversationId, messages: recentHistory() })
     }).then(function (res) {
       return res.json().catch(function () { return {}; }).then(function (data) {
@@ -434,7 +465,7 @@
       wait.remove();
       if (r.ok && r.data.reply) {
         var botEl = addBubble('bot', r.data.reply);
-        if (r.data.reply.indexOf('【主要功能】') !== -1) addCopyButton(botEl, r.data.reply);
+        if (r.data.reply.indexOf(SUMMARY_KEY) !== -1) addCopyButton(botEl, r.data.reply);
         history.push({ role: 'assistant', content: r.data.reply });
       } else {
         history.pop();   // 這題沒有成功回覆，從對話紀錄拿掉以維持交替
