@@ -184,15 +184,15 @@
   .c-copy { margin-top: 10px; font: 500 15px var(--font); padding: 6px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--ink); cursor: pointer; }
   .c-copy:hover { border-color: var(--blue); color: var(--blue); }
   /* 會議白板建房密碼申請卡片：AI 建立申請單後顯示，客人確認並通過 Turnstile 才寄出 */
-  .bubble.card { background: var(--panel); border: 1px solid var(--line); white-space: normal; }
-  .bubble.card b { display: block; margin-bottom: 6px; }
-  .bubble.card dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 0 0 10px; }
-  .bubble.card dt { color: var(--muted); }
-  .bubble.card dd { margin: 0; overflow-wrap: anywhere; }
-  .bubble.card .ts { min-height: 0; margin: 6px 0; }
-  .bubble.card .row { display: flex; gap: 10px; flex-wrap: wrap; }
-  .bubble.card .go { background: var(--blue); color: #fff; border-color: var(--blue); }
-  .bubble.card .go:disabled { opacity: .45; cursor: default; }
+  .bubble.board-card { background: var(--panel); border: 1px solid var(--line); white-space: normal; width: min(100%, 440px); }
+  .bubble.board-card b { display: block; margin-bottom: 6px; }
+  .bubble.board-card dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 0 0 10px; }
+  .bubble.board-card dt { color: var(--muted); white-space: nowrap; }
+  .bubble.board-card dd { margin: 0; overflow-wrap: anywhere; }
+  .bubble.board-card .bc-ts { min-height: 0; margin: 6px 0; }
+  .bubble.board-card .bc-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .bubble.board-card .bc-go { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .bubble.board-card .bc-go:disabled { opacity: .45; cursor: default; }
   .c-box { display: flex; align-items: flex-end; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 10px 10px 10px 20px; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
   .c-box:focus-within { border-color: var(--blue); }
   .c-box textarea { flex: 1; min-width: 0; border: 0; outline: none; resize: none; background: transparent; color: var(--ink); font: 400 18px/1.6 var(--font); padding: 7px 0; max-height: 9.6em; }
@@ -468,7 +468,7 @@
   }
   function addBoardCard(card) {
     var el = document.createElement('div');
-    el.className = 'bubble bot card';
+    el.className = 'bubble bot board-card';
     var title = document.createElement('b');
     title.textContent = '會議白板建房密碼申請';
     var dl = document.createElement('dl');
@@ -477,9 +477,9 @@
       var dd = document.createElement('dd'); dd.textContent = p[1];
       dl.appendChild(dt); dl.appendChild(dd);
     });
-    var ts = document.createElement('div'); ts.className = 'ts';
-    var row = document.createElement('div'); row.className = 'row';
-    var go = document.createElement('button'); go.type = 'button'; go.className = 'c-copy go'; go.textContent = '確認寄出'; go.disabled = true;
+    var ts = document.createElement('div'); ts.className = 'bc-ts';
+    var row = document.createElement('div'); row.className = 'bc-row';
+    var go = document.createElement('button'); go.type = 'button'; go.className = 'c-copy bc-go'; go.textContent = '確認寄出'; go.disabled = true;
     var no = document.createElement('button'); no.type = 'button'; no.className = 'c-copy'; no.textContent = '取消';
     row.appendChild(go); row.appendChild(no);
     el.appendChild(title); el.appendChild(dl); el.appendChild(ts); el.appendChild(row);
