@@ -39,10 +39,11 @@
 | 隨時間變色 | 依訪客電腦時間，24 小時各一組底色、整點換色（1.5 秒淡入）；白天 06–17 淺色、晚上 18–05 深色；沒有手動切換按鈕。24 色預覽：本機 `demo-daylight.html`（不部署、不進 git） |
 | 特效 | 工程方格紙底、CAD 十字游標、滑鼠經過格子亮起 logo 64 色階、點擊格子重力掉落（`prefers-reduced-motion` 時關閉） |
 | 字體 | 英數：自架更紗英數裁字檔 `assets/fonts/SarasaTermTC-Latin-*.woff2`；中文：Google Fonts Noto Sans TC |
-| AI 服務助理 | Worker `chengmu-chat`，路由 `chengmu.com.tw/api/*`，模型 `claude-haiku-5-5`（thinking disabled、effort high） |
+| AI 服務助理 | Worker `chengmu-chat`，路由 `chengmu.com.tw/api/*`，模型 `claude-sonnet-5-5`（2026-11-20 從 Haiku 5.5 換過來；自適應思考、effort low、伺服器端備援 `fallbacks: "default"`；Sonnet 5.5 不接受 thinking disabled） |
 | 對話紀錄 | D1 `chengmu-chat-log`：`chat_messages`（每則問答＋IP）、`leads`（轉交工程師紀錄） |
 | 需求整理 | 客人需求模糊時（例如「想做系統但沒頭緒」），AI 一題一題問（附選項），最後產生「需求摘要」（系統目的／使用者／主要功能／資料內容／使用環境／現況與困擾／期望時程／待確認事項），摘要下有「複製摘要」按鈕；確認後留聯絡方式，摘要隨通知信寄給工程師。規則在 `src/index.js` RULES 第 11 條；對話上限 40 則（Worker `MAX_MESSAGES` 與前端 `MAX_HISTORY` 要一致） |
 | 轉交工程師 | 客人有合作意願並留下聯絡方式時，AI 呼叫 `notify_engineer` 寄信到 chengmu00082998@gmail.com；同一段對話最多 3 封 |
+| 會議白板建房密碼申請（2026-11-22 寫好） | AI 收齊稱呼／單位／Email 後呼叫 `request_board_code` 只建「待確認」申請單；前端顯示申請卡片，客人通過 Turnstile 按「確認寄出」才 POST `/api/board-apply`：D1 原子預留額度 → HMAC 簽章呼叫白板 `create-codes` → Resend 寄密碼給申請者 → Cloudflare 寄通知給澄沐。密碼不經過模型、不存 D1。限制（全在伺服器端）：每段對話 1、每個 Email 每天 1、每個 IP 每天 3、全站每天 50（UTC 日界線）。寄給申請者失敗時密碼改寄澄沐人工轉寄。程式在 `src/board.js`；secret 沒設齊時整個功能不啟用 |
 | 中控台 | `D:\chengmu_deploy\ChengMu-Console.exe`（原始碼 `console/`），依日期／客戶 IP 看對話、搜尋、匯出 |
 | 網域與郵件 DNS | chengmu.com.tw 綁 CF Pages；www 301 轉 apex；Email Routing 已啟用；SPF、DKIM、DMARC（`p=none`）都已設定 |
 
@@ -62,9 +63,10 @@ assets/                    logo.svg、logo.png、line-qr.svg、fonts/
 deploy.ps1                 網站部署（git push + 白名單複製到 dist/ 後 wrangler pages deploy）
 worker-chat/               AI 服務助理 Worker
   src/index.js             RULES（回答規則）、notify_engineer、D1 寫入、限流、驗證
+  src/board.js             會議白板建房密碼申請（工具、申請單、/api/board-apply、Turnstile、白板 API、Resend）
   knowledge.md             AI 唯一知識來源（只寫服務類型，不寫客戶資訊、不寫 AI）
   wrangler.toml            路由、D1 綁定 DB、寄信綁定 EMAIL、限流 RATE_LIMITER
-  schema.sql、migrations/  資料表結構（0002 加 ip、0003 leads、0004 notify_count）
+  schema.sql、migrations/  資料表結構（0002 加 ip、0003 leads、0004 notify_count、0005 board_applications）
   export-chats.ps1         備用：用 wrangler 匯出對話成 CSV / Markdown
 console/                   ChengMu-Console（WinForms net472，SE-Deploy 家族樣式）
 ```
@@ -96,6 +98,8 @@ wrangler deploy
 - **在 Claude Code 內跑會被自動權限審查擋下**（動正式路由），請使用者在自己的 PowerShell 跑。
 - 本機先驗證打包：`wrangler deploy --dry-run --outdir <暫存資料夾>`。
 - 第一次或換電腦：`npm install`；換金鑰：`wrangler secret put ANTHROPIC_API_KEY`。
+- 白板申請用的 secret（名稱，值不寫在任何檔案）：`RESEND_API_KEY`（Resend，只有 Sending access）、`TURNSTILE_SECRET`（Turnstile 小工具 `chengmu-chat-board-apply`）、`BOARD_CODES_SECRET`（與白板主機 .env 同一把）、`BOARD_ACCESS_CLIENT_ID`／`BOARD_ACCESS_CLIENT_SECRET`（Cloudflare Access service token，選用：2026-11-22 決定先不開 Zero Trust，沒設就不帶，把關只有 HMAC 加白板端限流）。Turnstile site key 是公開的，寫在 `index.html` 的 `TURNSTILE_SITEKEY`。
+- Resend 寄件網域 chengmu.com.tw（東京、只開寄信）。DNS 只加了 `resend._domainkey` TXT 與 `send`、`rsend` 兩筆 CNAME（DNS only）；**不要加 Resend 的收信 MX**，會搶走 Email Routing。
 
 ### D1 資料表變更
 - 用 `wrangler d1 execute chengmu-chat-log --remote --yes --command "..."`；`--file` 走 `/import` 曾回 auth 10000。

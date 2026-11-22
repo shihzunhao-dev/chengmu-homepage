@@ -110,6 +110,15 @@ const PAIRS = [
   ["'思考中…'", "'Thinking…'"],
   ["'服務暫時無法使用，請改用以下方式聯絡：'", "'The service is temporarily unavailable. Please contact us directly: '"],
   ["'目前無法連線到服務助理，請改用以下方式聯絡：'", "'Cannot reach the assistant right now. Please contact us directly: '"],
+  // 會議白板建房密碼申請卡片
+  ["'會議白板建房密碼申請'", "'Meeting Whiteboard Passcode Request'"],
+  ["[['稱呼', card.name], ['公司／單位', card.org], ['Email', card.email], ['用途', card.purpose || '未提供']]",
+    "[['Name', card.name], ['Organization', card.org], ['Email', card.email], ['Purpose', card.purpose || 'Not provided']]"],
+  ["'確認寄出'", "'Confirm & send'"],
+  ["'取消'", "'Cancel'"],
+  ["'寄出中…'", "'Sending…'"],
+  ["'驗證元件載入失敗，請重新整理頁面後再試。'", "'The verification widget failed to load. Please reload the page and try again.'"],
+  ["'已取消申請。'", "'Request cancelled.'"],
 ];
 
 let html = fs.readFileSync(SRC, 'utf8');

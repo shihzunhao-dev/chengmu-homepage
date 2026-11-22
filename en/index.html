@@ -160,6 +160,16 @@
   .bubble.wait { color: var(--muted); }
   .c-copy { margin-top: 10px; font: 500 15px var(--font); padding: 6px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--ink); cursor: pointer; }
   .c-copy:hover { border-color: var(--blue); color: var(--blue); }
+  /* 會議白板建房密碼申請卡片：AI 建立申請單後顯示，客人確認並通過 Turnstile 才寄出 */
+  .bubble.card { background: var(--panel); border: 1px solid var(--line); white-space: normal; }
+  .bubble.card b { display: block; margin-bottom: 6px; }
+  .bubble.card dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 0 0 10px; }
+  .bubble.card dt { color: var(--muted); }
+  .bubble.card dd { margin: 0; overflow-wrap: anywhere; }
+  .bubble.card .ts { min-height: 0; margin: 6px 0; }
+  .bubble.card .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .bubble.card .go { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .bubble.card .go:disabled { opacity: .45; cursor: default; }
   .c-box { display: flex; align-items: flex-end; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 10px 10px 10px 20px; box-shadow: 0 4px 18px rgba(0,0,0,.06); }
   .c-box:focus-within { border-color: var(--blue); }
   .c-box textarea { flex: 1; min-width: 0; border: 0; outline: none; resize: none; background: transparent; color: var(--ink); font: 400 18px/1.6 var(--font); padding: 7px 0; max-height: 9.6em; }
@@ -410,6 +420,92 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  // ── 會議白板建房密碼申請卡片 ──
+  // AI 建立申請單後顯示：客人看過資料、通過 Cloudflare Turnstile 驗證，按「確認寄出」才真的發密碼寄信。
+  // 密碼只寄到客人的信箱，畫面與對話紀錄都不會出現。
+  var TURNSTILE_SITEKEY = '0x4AAAAAAGM3FHzW4O4jv1Wd';
+  var turnstileReady = null;
+  function loadTurnstile() {
+    if (!turnstileReady) {
+      turnstileReady = new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        s.async = true;
+        s.onload = function () { window.turnstile ? resolve(window.turnstile) : reject(); };
+        s.onerror = function () { turnstileReady = null; reject(); };
+        document.head.appendChild(s);
+      });
+    }
+    return turnstileReady;
+  }
+  // 確認結果接在上一則 AI 回覆後面，維持對話紀錄 user/assistant 交替
+  function appendToLastReply(text) {
+    var last = history[history.length - 1];
+    if (last && last.role === 'assistant') last.content += '\n\n' + text;
+  }
+  function addBoardCard(card) {
+    var el = document.createElement('div');
+    el.className = 'bubble bot card';
+    var title = document.createElement('b');
+    title.textContent = 'Meeting Whiteboard Passcode Request';
+    var dl = document.createElement('dl');
+    [['Name', card.name], ['Organization', card.org], ['Email', card.email], ['Purpose', card.purpose || 'Not provided']].forEach(function (p) {
+      var dt = document.createElement('dt'); dt.textContent = p[0];
+      var dd = document.createElement('dd'); dd.textContent = p[1];
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+    var ts = document.createElement('div'); ts.className = 'ts';
+    var row = document.createElement('div'); row.className = 'row';
+    var go = document.createElement('button'); go.type = 'button'; go.className = 'c-copy go'; go.textContent = 'Confirm & send'; go.disabled = true;
+    var no = document.createElement('button'); no.type = 'button'; no.className = 'c-copy'; no.textContent = 'Cancel';
+    row.appendChild(go); row.appendChild(no);
+    el.appendChild(title); el.appendChild(dl); el.appendChild(ts); el.appendChild(row);
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+
+    var token = '', widget = null;
+    // 驗證元件載入後卡片會變高：等它長好再捲到底，確保「確認寄出」看得到
+    function reveal() { log.scrollTop = log.scrollHeight; }
+    [300, 1000, 2500].forEach(function (ms) { setTimeout(reveal, ms); });
+    function close(text, cls) {
+      if (widget !== null && window.turnstile) { try { window.turnstile.remove(widget); } catch (e) { /* 已移除 */ } }
+      el.remove();
+      addBubble(cls || 'bot', text);
+      appendToLastReply(text);
+    }
+    loadTurnstile().then(function (t) {
+      widget = t.render(ts, {
+        sitekey: TURNSTILE_SITEKEY,
+        action: 'board_apply',
+        language: SITE_LANG === 'en' ? 'en' : 'zh-tw',
+        theme: root.dataset.theme === 'dark' ? 'dark' : 'light',
+        callback: function (tk) { token = tk; go.disabled = false; reveal(); },
+        'expired-callback': function () { token = ''; go.disabled = true; },
+        'error-callback': function () { token = ''; go.disabled = true; }
+      });
+      log.scrollTop = log.scrollHeight;
+    }, function () {
+      ts.textContent = 'The verification widget failed to load. Please reload the page and try again.';
+    });
+    no.addEventListener('click', function () { close('Request cancelled.'); });
+    go.addEventListener('click', function () {
+      if (!token) return;
+      go.disabled = no.disabled = true;
+      go.textContent = 'Sending…';
+      fetch('/api/board-apply', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-site-lang': SITE_LANG },
+        body: JSON.stringify({ conversationId: conversationId, id: card.id, token: token })
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; });
+      }).then(function (d) {
+        close(d.message || ('The service is temporarily unavailable. Please contact us directly: ' + CONTACT), d.ok ? 'bot' : 'err');
+      }).catch(function () {
+        close('Cannot reach the assistant right now. Please contact us directly: ' + CONTACT, 'err');
+      });
+    });
+  }
+
   function setBusy(b) {
     busy = b;
     sendBtn.disabled = b;
@@ -444,6 +540,7 @@
         var botEl = addBubble('bot', r.data.reply);
         if (r.data.reply.indexOf(SUMMARY_KEY) !== -1) addCopyButton(botEl, r.data.reply);
         history.push({ role: 'assistant', content: r.data.reply });
+        if (r.data.board && r.data.board.id) addBoardCard(r.data.board);
       } else {
         history.pop();   // 這題沒有成功回覆，從對話紀錄拿掉以維持交替
         addBubble('err', (r.data && r.data.error) || ('The service is temporarily unavailable. Please contact us directly: ' + CONTACT));

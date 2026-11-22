@@ -1,10 +1,13 @@
 // 澄沐官網 AI 服務助理：POST /api/chat
-// 前端送 { messages: [{ role, content }, ...] }，回 { reply }。
+// 前端送 { messages: [{ role, content }, ...] }，回 { reply }（建立白板申請單時另帶 board 卡片資料）。
 // 只說明服務大項；知識來源是 ../knowledge.md（打包進 Worker，不對外公開）。
+// POST /api/board-apply：會議白板建房密碼申請的確認步驟，見 src/board.js。
 import Anthropic from "@anthropic-ai/sdk";
 import KNOWLEDGE from "../knowledge.md";
+import { BOARD_TOOL, BOARD_RULES, BOARD_RULES_EN, KEEP_BOARD_DAYS, boardEnabled, createPending, handleBoardApply } from "./board.js";
 
-const MODEL = "claude-haiku-5-5";
+// 2026-11-20 起改用 Sonnet 5.5（使用者要求，回答品質優先；價格約為 Haiku 5.5 的 20 倍）
+const MODEL = "claude-sonnet-5-5";
 const ALLOWED_ORIGINS = ["https://chengmu.com.tw"];
 const MAX_MESSAGES = 40;      // 單次請求最多帶幾則對話（含 AI 回覆）；需求整理約要 25～35 則，前端 MAX_HISTORY 要一致
 const MAX_CHARS = 500;        // 客人每則訊息字數上限
@@ -74,6 +77,8 @@ const EN_MSG = {
   "目前詢問的人比較多，請稍候再試。": "We are receiving many questions right now. Please try again shortly.",
   [`服務暫時無法使用，請改用以下方式聯絡：${CONTACT}`]: `The service is temporarily unavailable. Please contact us directly: ${CONTACT_EN}`,
   "已轉交工程師，會盡快與您聯繫，謝謝您。": "Your request has been passed to our engineer, who will contact you soon. Thank you.",
+  "目前暫時無法申請，請稍後再試，或直接聯絡澄沐。": "Applications are temporarily unavailable. Please try again later or contact us directly.",
+  "請在下方的申請卡片確認資料並完成驗證，按「確認寄出」後密碼會寄到您的信箱。": "Please confirm your details on the application card below and complete the verification. Your passcode will be emailed to you after you press Confirm.",
 };
 
 const OWNER_EMAIL = "chengmu00082998@gmail.com";
@@ -238,7 +243,18 @@ async function purgeExpired(env) {
     env.DB.prepare(`DELETE FROM leads WHERE created_at < ${leadCut}`),
   ]);
   const n = results.map((r) => (r.meta && r.meta.changes) || 0);
-  const summary = { chats: n[0], leadChats: n[1], leads: n[2] };
+  // 白板申請紀錄：超過 90 天整筆刪除；沒確認或卡在預留的申請單超過 1 天刪除（裡面還有姓名與 Email）。
+  // 分開執行：資料表還沒建立時不影響上面的對話清除。
+  let board = null;
+  try {
+    const r = await env.DB.prepare(
+      `DELETE FROM board_applications WHERE created_at < ${iso(`-${KEEP_BOARD_DAYS} days`)} OR (status IN ('pending','reserved') AND created_at < ${iso("-1 days")})`
+    ).run();
+    board = (r.meta && r.meta.changes) || 0;
+  } catch (err) {
+    console.error("purge board_applications failed", err && err.message);
+  }
+  const summary = { chats: n[0], leadChats: n[1], leads: n[2], board };
   console.log("purgeExpired", JSON.stringify(summary));
   return summary;
 }
@@ -253,7 +269,7 @@ export default {
     // 英文版官網送 X-Site-Lang: en；回給訪客的訊息依此切換語言
     const en = (request.headers.get("X-Site-Lang") || "").toLowerCase() === "en";
     const t = (zh) => (en && EN_MSG[zh]) || zh;
-    if (pathname !== "/api/chat") return json(404, { error: "not found" });
+    if (pathname !== "/api/chat" && pathname !== "/api/board-apply") return json(404, { error: "not found" });
     if (request.method !== "POST") return json(405, { error: t("請使用 POST。") }, { allow: "POST" });
 
     const origin = request.headers.get("Origin");
@@ -263,6 +279,17 @@ export default {
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
     const { success } = await env.RATE_LIMITER.limit({ key: ip });
     if (!success) return json(429, { error: t("提問太頻繁了，請稍候一分鐘再試。") });
+
+    const board = boardEnabled(env);   // 必要的 secret 沒設齊時，白板申請整個不啟用
+    if (pathname === "/api/board-apply") {
+      if (!board) return json(503, { ok: false, message: t("目前暫時無法申請，請稍後再試，或直接聯絡澄沐。") });
+      try {
+        return await handleBoardApply(request, env, ip === "unknown" ? null : ip, ctx);
+      } catch (err) {
+        console.error("board-apply error", err && err.message);
+        return json(500, { ok: false, message: t("目前暫時無法申請，請稍後再試，或直接聯絡澄沐。") });
+      }
+    }
 
     let body;
     try {
@@ -292,7 +319,8 @@ export default {
       return json(500, { error: t(`服務暫時無法使用，請改用以下方式聯絡：${CONTACT}`) });
     }
 
-    const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 30_000 });
+    // Sonnet 比 Haiku 慢，需求摘要較長時一次回覆可能超過 30 秒，逾時放寬到 60 秒
+    const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 60_000 });
 
     try {
       const transcript = messages.map((m) => ({ role: m.role, content: m.content.trim() }));
@@ -300,20 +328,28 @@ export default {
       const sum = { in: 0, cached: 0, write: 0, out: 0 };
       let response;
       let notified = "";
+      let boardResult = "";
+      let boardCard = null;   // 這一輪建立的白板申請單，回給前端顯示確認卡片
       // 最多兩輪：第一輪可能呼叫 notify_engineer，第二輪拿工具結果寫給客人的回覆
       for (let round = 0; round < 2; round++) {
-        response = await client.messages.create({
+        response = await client.beta.messages.create({
           model: MODEL,
-          max_tokens: 1500,   // 需求摘要較長；一般回答仍由規則限制在 2～5 句
-          thinking: { type: "disabled" },
-          // 直接面對客戶，準確優先：effort high（thinking disabled 在 low–high 都有效）
-          output_config: { effort: "high" },
+          // 思考也算在 max_tokens 裡：需求摘要約 1000 tokens，再留思考的空間；一般回答仍由規則限制在 2～5 句
+          max_tokens: 4000,
+          // Sonnet 5.5 不接受 thinking: disabled（400）。不帶 thinking＝自適應思考；
+          // 官網即時問答用 effort low：簡單問題幾乎不思考、回得快，需要時才多想一點
+          output_config: { effort: "low" },
+          // 安全分類器若拒答（stop_reason: refusal），由伺服器自動改用備援模型重答
+          betas: ["server-side-fallback-2026-07-01"],
+          fallbacks: "default",
           system: [
             { type: "text", text: RULES },
             { type: "text", text: `# 服務說明\n\n${KNOWLEDGE}`, cache_control: { type: "ephemeral" } },
             ...(en ? [{ type: "text", text: RULES_EN }] : []),
+            // 白板申請規則放在快取區塊之後，啟用與否不影響服務說明的提示快取
+            ...(board ? [{ type: "text", text: en ? `${BOARD_RULES}\n\n${BOARD_RULES_EN}` : BOARD_RULES }] : []),
           ],
-          tools: [NOTIFY_TOOL],
+          tools: board ? [NOTIFY_TOOL, BOARD_TOOL] : [NOTIFY_TOOL],
           messages: convo,
         });
         const ru = response.usage || {};
@@ -325,16 +361,27 @@ export default {
         convo.push({ role: "assistant", content: response.content });
         const results = [];
         for (const t of toolUses) {
-          const out = t.name === "notify_engineer"
-            ? await notifyEngineer(env, turn, t.input || {}, transcript)
-            : "失敗：沒有這個工具。";
-          if (t.name === "notify_engineer") notified = out;
+          let out;
+          if (t.name === "notify_engineer") {
+            out = notified = await notifyEngineer(env, turn, t.input || {}, transcript);
+          } else if (t.name === "request_board_code" && board && !boardCard) {
+            try {
+              const p = await createPending(env, turn, t.input || {});
+              out = boardResult = p.result;
+              if (p.card) boardCard = p.card;
+            } catch (err) {
+              console.error("board pending failed", err && err.message);
+              out = boardResult = "失敗：目前暫時無法申請，請客人稍後再試，或直接聯絡澄沐。";
+            }
+          } else {
+            out = t.name === "request_board_code" ? "失敗：這一輪已建立申請單，不要重複呼叫。" : "失敗：沒有這個工具。";
+          }
           results.push({ type: "tool_result", tool_use_id: t.id, content: out });
         }
         convo.push({ role: "user", content: results });
       }
 
-      const usage = `in=${sum.in},cached=${sum.cached},write=${sum.write},out=${sum.out}${notified ? `,notify=${notified.startsWith("成功") ? "ok" : notified.startsWith("已記錄") ? "dup" : "fail"}` : ""}`;
+      const usage = `model=${response.model},in=${sum.in},cached=${sum.cached},write=${sum.write},out=${sum.out}${notified ? `,notify=${notified.startsWith("成功") ? "ok" : notified.startsWith("已記錄") ? "dup" : "fail"}` : ""}${boardResult ? `,board=${boardCard ? "pending" : "refused"}` : ""}`;
       const usageHeader = { "x-usage": usage };
 
       if (response.stop_reason === "refusal") {
@@ -342,13 +389,15 @@ export default {
         return json(200, { reply: t(REFUSAL_REPLY) }, usageHeader);
       }
 
+      const fallback = boardCard ? "請在下方的申請卡片確認資料並完成驗證，按「確認寄出」後密碼會寄到您的信箱。"
+        : notified.startsWith("成功") ? "已轉交工程師，會盡快與您聯繫，謝謝您。" : REFUSAL_REPLY;
       const reply = response.content
         .filter((b) => b.type === "text")
         .map((b) => b.text)
         .join("")
-        .trim() || t(notified.startsWith("成功") ? "已轉交工程師，會盡快與您聯繫，謝謝您。" : REFUSAL_REPLY);
+        .trim() || t(fallback);
       log("assistant", reply, usage);
-      return json(200, { reply }, usageHeader);
+      return json(200, boardCard ? { reply, board: boardCard } : { reply }, usageHeader);
     } catch (err) {
       if (err instanceof Anthropic.RateLimitError) {
         log("error", "Anthropic 429 rate limit");
