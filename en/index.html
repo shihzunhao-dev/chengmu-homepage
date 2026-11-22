@@ -393,7 +393,7 @@
     if (preset) {
       input.value = preset.slice(0, 100);
       autoGrow();
-      history.replaceState(null, '', location.pathname + location.hash);
+      window.history.replaceState(null, '', location.pathname + location.hash);   // 這裡的 history 是對話紀錄陣列，要用 window.history
     }
   } catch (e) { /* 舊瀏覽器不支援就略過 */ }
   // Enter 送出、Shift+Enter 換行；中文輸入法選字中（isComposing）按 Enter 不送出
