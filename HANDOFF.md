@@ -43,7 +43,7 @@
 | 對話紀錄 | D1 `chengmu-chat-log`：`chat_messages`（每則問答＋IP）、`leads`（轉交工程師紀錄） |
 | 需求整理 | 客人需求模糊時（例如「想做系統但沒頭緒」），AI 一題一題問（附選項），最後產生「需求摘要」（系統目的／使用者／主要功能／資料內容／使用環境／現況與困擾／期望時程／待確認事項），摘要下有「複製摘要」按鈕；確認後留聯絡方式，摘要隨通知信寄給工程師。規則在 `src/index.js` RULES 第 11 條；對話上限 40 則（Worker `MAX_MESSAGES` 與前端 `MAX_HISTORY` 要一致） |
 | 轉交工程師 | 客人有合作意願並留下聯絡方式時，AI 呼叫 `notify_engineer` 寄信到 chengmu00082998@gmail.com；同一段對話最多 3 封 |
-| 會議白板建房密碼申請（2026-11-22 寫好） | AI 收齊稱呼／單位／Email 後呼叫 `request_board_code` 只建「待確認」申請單；前端顯示申請卡片，客人通過 Turnstile 按「確認寄出」才 POST `/api/board-apply`：D1 原子預留額度 → HMAC 簽章呼叫白板 `create-codes` → Resend 寄密碼給申請者 → Cloudflare 寄通知給澄沐。密碼不經過模型、不存 D1。限制（全在伺服器端）：每段對話 1、每個 Email 每天 1、每個 IP 每天 3、全站每天 50（UTC 日界線）。寄給申請者失敗時密碼改寄澄沐人工轉寄。程式在 `src/board.js`；secret 沒設齊時整個功能不啟用 |
+| 會議白板建房密碼申請（2026-11-22 上線） | AI 收齊稱呼／單位／Email 後呼叫 `request_board_code` 只建「待確認」申請單；前端顯示申請卡片，客人通過 Turnstile 按「確認寄出」才 POST `/api/board-apply`：D1 原子預留額度 → HMAC 簽章呼叫白板 `create-codes` → Resend 寄密碼給申請者 → Cloudflare 寄通知給澄沐。密碼不經過模型、不存 D1。限制（全在伺服器端）：每個 Email 每天 3、每個 IP 每天 3、全站每天 50（UTC 日界線）；不限對話（一天可開多場會）；白板端另限同一 Email 同時只能有一組未使用的密碼。寄給申請者失敗時密碼改寄澄沐人工轉寄。程式在 `src/board.js`；secret 沒設齊時整個功能不啟用 |
 | 中控台 | `D:\chengmu_deploy\ChengMu-Console.exe`（原始碼 `console/`），依日期／客戶 IP 看對話、搜尋、匯出 |
 | 網域與郵件 DNS | chengmu.com.tw 綁 CF Pages；www 301 轉 apex；Email Routing 已啟用；SPF、DKIM、DMARC（`p=none`）都已設定 |
 

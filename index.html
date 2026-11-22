@@ -397,8 +397,28 @@
     input.style.height = input.scrollHeight + 'px';
   }
   input.addEventListener('input', autoGrow);
-  // 窄螢幕用短提示，避免提示文字換行被單行輸入框切掉
-  if (window.matchMedia && window.matchMedia('(max-width: 720px)').matches) input.placeholder = '請輸入您的問題…';
+  // 提示文字輪流顯示範例（每 4 秒換一句），讓訪客知道可以問什麼、也可以申請會議白板密碼。
+  // 窄螢幕用短句，避免提示文字超出單行輸入框被切掉
+  var narrow = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  var HINTS = narrow
+    ? ['例如：舊系統能接手嗎？', '例如：申請會議白板密碼', '例如：想做倉儲管理系統']
+    : ['請輸入您的問題，例如：舊系統可以接手維護嗎？', '請輸入您的問題，例如：我想申請線上會議白板密碼', '請輸入您的問題，例如：想做一套倉儲管理系統'];
+  var hintIdx = 0;
+  input.placeholder = HINTS[0];
+  setInterval(function () {
+    if (input.value) return;   // 已經在打字就不換
+    hintIdx = (hintIdx + 1) % HINTS.length;
+    input.placeholder = HINTS[hintIdx];
+  }, 4000);
+  // 連結帶 ?q= 時預填問題（例如白板建房頁的「還沒有密碼？」連結）；只預填、不自動送出
+  try {
+    var preset = new URLSearchParams(location.search).get('q');
+    if (preset) {
+      input.value = preset.slice(0, 100);
+      autoGrow();
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
+  } catch (e) { /* 舊瀏覽器不支援就略過 */ }
   // Enter 送出、Shift+Enter 換行；中文輸入法選字中（isComposing）按 Enter 不送出
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {

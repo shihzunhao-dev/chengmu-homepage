@@ -18,6 +18,10 @@ const NOTIFY_SENDER = "assistant@chengmu.com.tw";            // Cloudflare send_
 const APPLICANT_SENDER = "澄沐實業 <noreply@chengmu.com.tw>"; // Resend（chengmu.com.tw 已驗證）
 
 // 次數限制（日界線用 UTC，與 Resend 每日額度同步重算）
+// 同一個 Email 每天 3 組（2026-11-22 使用者決定：主持人一天可能開好幾場）。
+// 不限制同一段對話：conversationId 由前端產生，重新整理就換一組，擋不了人只造成不便。
+// 白板端另有「同一個 Email 同時只能有一組未使用的密碼」，所以不會一次囤好幾組。
+const LIMIT_PER_EMAIL_PER_DAY = 3;
 const LIMIT_PER_IP_PER_DAY = 3;
 const LIMIT_GLOBAL_PER_DAY = 50;          // Resend 免費版每天 100 封，保留一半給其他用途
 const LIMIT_PENDING_PER_IP_PER_DAY = 10;  // 申請單（還沒確認）本身也限量，避免灌資料庫
@@ -99,11 +103,9 @@ export async function createPending(env, turn, input) {
   const q = (sql, ...b) => env.DB.prepare(sql).bind(...b).first();
 
   // 先擋明顯會失敗的情況，讓 AI 當場說明（真正的把關在第 2 步的原子預留）
-  if (conv !== "unknown" && (await q(`SELECT 1 AS x FROM board_applications WHERE conversation_id = ? AND ${COUNTED}`, conv))) {
-    return { result: "已申請過：這段對話已經申請過一組密碼，請客人查看信箱（包含垃圾信件匣）；需要更多密碼請直接聯絡澄沐。" };
-  }
-  if (await q(`SELECT 1 AS x FROM board_applications WHERE email_hash = ? AND day = ? AND ${COUNTED}`, emailHash, day)) {
-    return { result: "已申請過：這個 Email 今天已經申請過密碼，請客人查看信箱（包含垃圾信件匣），或明天再申請。" };
+  const emailToday = await q(`SELECT COUNT(*) AS n FROM board_applications WHERE email_hash = ? AND day = ? AND ${COUNTED}`, emailHash, day);
+  if (emailToday && emailToday.n >= LIMIT_PER_EMAIL_PER_DAY) {
+    return { result: "已達上限：這個 Email 今天的申請次數已達上限，請客人明天再申請，或直接聯絡澄沐。" };
   }
   const ipToday = await q(`SELECT COUNT(*) AS n FROM board_applications WHERE ip = ? AND day = ? AND ${COUNTED}`, ip, day);
   const ipPending = await q("SELECT COUNT(*) AS n FROM board_applications WHERE ip = ? AND created_at >= ?", ip, `${day}T00:00:00.000Z`);
@@ -129,8 +131,7 @@ const MSG = {
                 en: () => "The passcode was issued, but sending the email failed. We will email it to you as soon as possible." },
   verify: { zh: () => "驗證沒有通過，請重新整理頁面後再試一次。", en: () => "Verification failed. Please reload the page and try again." },
   expired: { zh: () => "這張申請單已失效，請在對話中重新申請。", en: () => "This application has expired. Please apply again in the chat." },
-  dupConv: { zh: () => "這段對話已經申請過一組密碼，請查看信箱（包含垃圾信件匣）。", en: () => "A passcode has already been requested in this conversation. Please check your inbox (and spam folder)." },
-  dupEmail: { zh: () => "這個 Email 今天已經申請過密碼，請查看信箱（包含垃圾信件匣），或明天再申請。", en: () => "This email address has already requested a passcode today. Please check your inbox (and spam folder) or try again tomorrow." },
+  dupEmail: { zh: () => "這個 Email 今天的申請次數已達上限，請明天再申請，或直接聯絡澄沐。", en: () => "This email address has reached today's request limit. Please try again tomorrow or contact us directly." },
   limit: { zh: () => "今天的申請名額已滿，請明天再試，或直接聯絡澄沐。", en: () => "Today's application limit has been reached. Please try again tomorrow or contact us directly." },
   already: { zh: (r) => r || "這個 Email 已經有一組尚未使用的密碼，請先使用它。", en: () => "This email address already has an unused passcode. Please use that one first." },
   invalid: { zh: (r) => `申請資料有誤：${r || "請檢查後在對話中重新申請"}。`, en: () => "Some of the details are invalid. Please check them and apply again in the chat." },
@@ -290,9 +291,8 @@ export async function handleBoardApply(request, env, ip, ctx) {
     `UPDATE board_applications SET status = 'reserved', day = ?1 WHERE id = ?2 AND status = 'pending'
        AND (SELECT COUNT(*) FROM board_applications WHERE day = ?1 AND ${COUNTED}) < ?3
        AND (SELECT COUNT(*) FROM board_applications WHERE day = ?1 AND ip = ?4 AND ${COUNTED}) < ?5
-       AND NOT EXISTS (SELECT 1 FROM board_applications WHERE day = ?1 AND email_hash = ?6 AND ${COUNTED})
-       AND NOT EXISTS (SELECT 1 FROM board_applications WHERE conversation_id = ?7 AND conversation_id != 'unknown' AND ${COUNTED})`
-  ).bind(day, id, LIMIT_GLOBAL_PER_DAY, row.ip, LIMIT_PER_IP_PER_DAY, row.email_hash, row.conversation_id).run();
+       AND (SELECT COUNT(*) FROM board_applications WHERE day = ?1 AND email_hash = ?6 AND ${COUNTED}) < ?7`
+  ).bind(day, id, LIMIT_GLOBAL_PER_DAY, row.ip, LIMIT_PER_IP_PER_DAY, row.email_hash, LIMIT_PER_EMAIL_PER_DAY).run();
 
   const finish = (status, result, keepPersonal = false) => env.DB.prepare(
     `UPDATE board_applications SET status = ?, result = ?, finished_at = ?${keepPersonal ? "" : ", name = NULL, org = NULL, email = NULL, purpose = NULL"} WHERE id = ?`
@@ -302,8 +302,8 @@ export async function handleBoardApply(request, env, ip, ctx) {
     // 找出是哪一項額度用完，回給客人對應的說明
     const q = (sql, ...b) => env.DB.prepare(sql).bind(...b).first();
     let key = "limit";
-    if (row.conversation_id !== "unknown" && (await q(`SELECT 1 AS x FROM board_applications WHERE conversation_id = ? AND ${COUNTED}`, row.conversation_id))) key = "dupConv";
-    else if (await q(`SELECT 1 AS x FROM board_applications WHERE day = ? AND email_hash = ? AND ${COUNTED}`, day, row.email_hash)) key = "dupEmail";
+    const e = await q(`SELECT COUNT(*) AS n FROM board_applications WHERE day = ? AND email_hash = ? AND ${COUNTED}`, day, row.email_hash);
+    if (e && e.n >= LIMIT_PER_EMAIL_PER_DAY) key = "dupEmail";
     await finish("rejected", key);
     return fail(key, 429);
   }
