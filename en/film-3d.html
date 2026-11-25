@@ -69,5 +69,7 @@
 document.querySelector('video').volume = 0.5;
 document.querySelectorAll('[data-lang]').forEach(function (a) { a.addEventListener('click', function () { try { localStorage.setItem('cm-lang', a.dataset.lang); } catch (e) {} }); });
 </script>
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6e87131646a644ca9906b74a8a471eee"}'></script>
 </body>
 </html>
